@@ -1,0 +1,64 @@
+### General
+.gradle
+.kotlin
+/local.properties
+.DS_Store
+*.log
+
+### Build Artifacts
+/build
+**/build
+/captures
+.externalNativeBuild
+.cxx
+
+### IntelliJ IDEA / Android Studio
+.idea
+*.iml
+*.iws
+*.ipr
+*.hprof
+out/
+.fleet/
+
+### iOS / Xcode Generated Files
+# Xcode
+build/
+*.pbxuser
+! default.pbxuser
+*.mode1v3
+! default.mode1v3
+*.mode2v3
+! default.mode2v3
+*.perspectivev3
+! default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+
+# CocoaPods
+# It is generally recommended NOT to ignore Pods/ in libraries, but for apps it is common practice.
+# See https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
+Podfile.lock
+Pods
+**/iosApp/Pods/
+
+# Swift Package Manager (SwiftPM)
+.build/
+Packages/
+Package.pins
+Package.resolved
+.swiftpm/configuration/registries.json
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+
+### Platform Specific Files (Optional/Config Dependant)
+# Firebase/secrets files (adjust paths as needed)
+# /androidApp/google-services.json
+# /iosApp/GoogleService-Info.plist
+
+# Gradle Kotlin DSL specific build folders
+**/*.gradle.kts.orig
