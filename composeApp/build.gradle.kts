@@ -6,6 +6,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.buildconfig)
 }
 
 kotlin {
@@ -19,6 +21,8 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.ktor.client.android)
+            implementation(libs.kotlinx.coroutines.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -30,6 +34,26 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(projects.shared)
+            
+            // Kotlin Coroutines
+            implementation(libs.kotlinx.coroutines.core)
+            
+            // Kotlin Serialization
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.serialization.core)
+            
+            // Koin
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            
+            // Ktor
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.logging)
+            
+            // Kermit
+            implementation(libs.kermit)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -62,6 +86,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+}
+
+buildConfig {
+    packageName = "com.aryandi.paymentnfc"
+    buildConfigField("String", "API_URL", "\"https://api.example.com\"")
 }
 
 dependencies {
