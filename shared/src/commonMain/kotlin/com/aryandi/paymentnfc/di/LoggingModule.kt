@@ -1,7 +1,5 @@
 package com.aryandi.paymentnfc.di
 
-import co.touchlab.kermit.Logger
-import com.aryandi.paymentnfc.logging.KermitLogger
 import org.koin.dsl.module
 
 val loggingModule = module {
