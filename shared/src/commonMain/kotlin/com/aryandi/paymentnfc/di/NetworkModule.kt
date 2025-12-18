@@ -5,5 +5,6 @@ import io.ktor.client.HttpClient
 import org.koin.dsl.module
 
 val networkModule = module {
-    single<HttpClient> { HttpClientFactory.create() }
+    single { NetworkConfig() }
+    single<HttpClient> { HttpClientFactory.create(get<NetworkConfig>().enableNetworkLogs) }
 }

@@ -6,11 +6,17 @@ import org.koin.dsl.KoinAppDeclaration
 
 fun initKoin(config: KoinAppDeclaration? = null) {
     startKoin {
-        config?.invoke(this)
+        // Allow platform modules (loaded after shared modules) to override definitions.
+        allowOverride(true)
+
+        // Load shared modules first, then allow platforms to override (e.g. NetworkConfig).
         modules(sharedModule)
+        config?.invoke(this)
     }
 }
 
 val sharedModule: List<Module> = listOf(
-    networkModule
+    loggingModule,
+    networkModule,
+    authModule
 )

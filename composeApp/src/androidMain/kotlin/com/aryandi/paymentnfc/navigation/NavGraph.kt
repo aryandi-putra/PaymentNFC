@@ -32,8 +32,8 @@ fun NavGraph(
                 onBack = {
                     navController.navigateUp()
                 },
-                onSignIn = { email, password ->
-                    navController.navigate(Screen.Home(userId = email)) {
+                onSignInSuccess = { userId ->
+                    navController.navigate(Screen.Home(userId = userId)) {
                         popUpTo(Screen.Landing) { inclusive = true }
                     }
                 },
