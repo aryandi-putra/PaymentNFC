@@ -46,6 +46,17 @@ kotlin {
             // Kermit
             implementation(libs.kermit)
         }
+        
+        androidMain.dependencies {
+            // Platform-specific Ktor client for Android
+            implementation(libs.ktor.client.android)
+        }
+        
+        iosMain.dependencies {
+            // Platform-specific Ktor client for iOS
+            implementation(libs.ktor.client.darwin)
+        }
+        
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
