@@ -20,6 +20,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.navigation.compose)
             implementation(libs.ktor.client.android)
             implementation(libs.kotlinx.coroutines.android)
         }
