@@ -5,7 +5,7 @@ import co.touchlab.kermit.Severity
 data class AppConfig(
     val isDebug: Boolean,
     val enableNetworkLogging: Boolean,
-    val environment: Environment
+    val environment: Environment,
 )
 
 enum class Environment {

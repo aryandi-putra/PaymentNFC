@@ -12,7 +12,9 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 actual object HttpClientFactory {
-    actual fun create(enableNetworkLogs: Boolean): HttpClient {
+    actual fun create(
+        enableNetworkLogs: Boolean,
+    ): HttpClient {
         return HttpClient(Android) {
             install(ContentNegotiation) {
                 json(Json {

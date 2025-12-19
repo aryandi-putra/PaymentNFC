@@ -1,7 +1,6 @@
 package com.aryandi.paymentnfc
 
 import android.app.Application
-import android.content.pm.ApplicationInfo
 import co.touchlab.kermit.Logger
 import com.aryandi.paymentnfc.config.AppConfig
 import com.aryandi.paymentnfc.config.ConfigHolder
@@ -21,13 +20,11 @@ class PaymentNFCApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         
-        val isDebuggable = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
-
-        // 1. Initialize AppConfig
+        // 1. Initialize AppConfig using generated BuildConfig
         ConfigHolder.config = AppConfig(
-            isDebug = isDebuggable,
-            enableNetworkLogging = isDebuggable,
-            environment = if (isDebuggable) Environment.DEV else Environment.PROD
+            isDebug = BuildConfig.IS_DEBUG,
+            enableNetworkLogging = BuildConfig.IS_DEBUG,
+            environment = if (BuildConfig.IS_DEBUG) Environment.DEV else Environment.PROD,
         )
 
         // 2. Initialize Kermit with configured severity
@@ -39,11 +36,11 @@ class PaymentNFCApplication : Application() {
             androidContext(this@PaymentNFCApplication)
 
             // Platform overrides
-            modules(
-                module {
-                    single { NetworkConfig(enableNetworkLogs = ConfigHolder.config.enableNetworkLogging) }
-                }
-            )
+//            modules(
+//                module {
+//                    single { NetworkConfig(enableNetworkLogs = ConfigHolder.config.enableNetworkLogging) }
+//                }
+//            )
         }
         
         // Set up crash handler to log uncaught exceptions
