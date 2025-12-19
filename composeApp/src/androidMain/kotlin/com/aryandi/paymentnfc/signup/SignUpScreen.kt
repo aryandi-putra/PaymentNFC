@@ -74,20 +74,22 @@ fun SignUpScreen(
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.Transparent
-                )
+                    containerColor = primaryBlue,
+                    scrolledContainerColor = primaryBlue
+                ),
+                windowInsets = WindowInsets.statusBars
             )
         }
     ) { padding ->
-        Column(
+        // Use a Box to allow the white card to sit nicely below the fixed toolbar
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .background(primaryBlue)
         ) {
             Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f),
+                modifier = Modifier.fillMaxSize(),
                 color = Color.White,
                 shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
             ) {
@@ -109,13 +111,16 @@ fun SignUpScreen(
                             text = "Create Account",
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold,
-                            color = titleColor
+                            color = titleColor,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
                         )
                         Text(
                             text = "Hello there, create New account",
                             fontSize = 14.sp,
                             color = subtitleColor,
-                            modifier = Modifier.padding(top = 4.dp)
+                            modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
+                            textAlign = TextAlign.Center
                         )
                     }
 

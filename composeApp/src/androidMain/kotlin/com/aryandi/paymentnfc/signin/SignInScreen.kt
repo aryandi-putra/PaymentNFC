@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +21,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,6 +56,7 @@ import com.aryandi.paymentnfc.presentation.viewmodel.LoginViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignInScreen(
     modifier: Modifier = Modifier,
@@ -64,6 +69,10 @@ fun SignInScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val primaryBlue = Color(0xFF4285F4)
+    val titleColor = Color(0xFF3F3D56)
+    val subtitleColor = Color(0xFF707070)
+
     LaunchedEffect(Unit) {
         viewModel.events.collectLatest { event ->
             when (event) {
@@ -75,103 +84,97 @@ fun SignInScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = Color.Transparent,
+        containerColor = primaryBlue,
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        "Sign in",
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 20.sp
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = primaryBlue,
+                    scrolledContainerColor = primaryBlue
+                ),
+            )
+        }
     ) { padding ->
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF4FACFE),
-                            Color(0xFF8E54E9),
-                        ),
-                    ),
-                ),
+                .background(primaryBlue)
         ) {
-            // Main white card container
             Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 24.dp, vertical = 32.dp),
+                modifier = Modifier.fillMaxSize(),
                 color = Color.White,
-                shape = RoundedCornerShape(32.dp),
-                shadowElevation = 4.dp,
+                shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 24.dp, vertical = 24.dp)
+                        .padding(horizontal = 24.dp)
                         .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Top app bar
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back",
-                                tint = Color(0xFF3C3F7F),
-                            )
-                        }
-                        Text(
-                            text = "Sign in",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color(0xFF3C3F7F),
-                            modifier = Modifier.padding(start = 4.dp),
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
                     // Welcome text
-                    Text(
-                        text = "Welcome Back",
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF4248B5),
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Hello there, sign in to continue",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF9AA0C8),
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = "Welcome Back",
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = titleColor,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            text = "Hello there, sign in to continue",
+                            fontSize = 14.sp,
+                            color = subtitleColor,
+                            modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(32.dp))
 
                     // Illustration placeholder
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 32.dp),
+                            .size(160.dp)
+                            .padding(16.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         Surface(
                             shape = CircleShape,
                             color = Color(0xFFF3F4FF),
-                            modifier = Modifier.size(140.dp),
+                            modifier = Modifier.fillMaxSize(),
                         ) {
                             Box(
                                 contentAlignment = Alignment.Center,
-                                modifier = Modifier
-                                    .background(
-                                        brush = Brush.linearGradient(
-                                            colors = listOf(
-                                                Color(0xFF4FACFE),
-                                                Color(0xFF8E54E9),
-                                            ),
-                                        ),
-                                    ),
                             ) {
                                 Icon(
                                     imageVector = Icons.Filled.Lock,
                                     contentDescription = "Lock",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(48.dp),
+                                    tint = primaryBlue,
+                                    modifier = Modifier.size(64.dp),
                                 )
                             }
                         }
@@ -187,7 +190,7 @@ fun SignInScreen(
                             if (uiState.error != null) viewModel.onIntent(LoginIntent.ClearError)
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text(text = "Username") },
+                        placeholder = { Text(text = "Username", color = Color.Gray) },
                         singleLine = true,
                         enabled = !uiState.isLoading,
                         colors = TextFieldDefaults.colors(
@@ -197,7 +200,7 @@ fun SignInScreen(
                             focusedIndicatorColor = Color.Transparent,
                             disabledContainerColor = Color(0xFFF6F7FF),
                         ),
-                        shape = RoundedCornerShape(24.dp),
+                        shape = RoundedCornerShape(16.dp),
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -210,7 +213,7 @@ fun SignInScreen(
                             if (uiState.error != null) viewModel.onIntent(LoginIntent.ClearError)
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text(text = "Password") },
+                        placeholder = { Text(text = "Password", color = Color.Gray) },
                         singleLine = true,
                         enabled = !uiState.isLoading,
                         visualTransformation = PasswordVisualTransformation(),
@@ -221,7 +224,7 @@ fun SignInScreen(
                             focusedIndicatorColor = Color.Transparent,
                             disabledContainerColor = Color(0xFFF6F7FF),
                         ),
-                        shape = RoundedCornerShape(24.dp),
+                        shape = RoundedCornerShape(16.dp),
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -248,33 +251,49 @@ fun SignInScreen(
                         fontSize = 12.sp,
                     )
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
                     // Sign in button
                     Button(
                         onClick = { viewModel.onIntent(LoginIntent.Submit) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(52.dp),
+                            .height(56.dp),
                         enabled = !uiState.isLoading,
-                        shape = RoundedCornerShape(26.dp),
+                        shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFBFC2F5),
-                            contentColor = Color.White,
+                            containerColor = Color.Transparent,
                         ),
+                        contentPadding = PaddingValues()
                     ) {
-                        if (uiState.isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                color = Color.White,
-                                strokeWidth = 2.dp,
-                            )
-                        } else {
-                            Text(text = "Sign in")
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(Color(0xFF6C63FF), Color(0xFF3F3D56))
+                                    )
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (uiState.isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    color = Color.White,
+                                    strokeWidth = 2.dp,
+                                )
+                            } else {
+                                Text(
+                                    text = "Sign in",
+                                    color = Color.White,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -283,18 +302,20 @@ fun SignInScreen(
                     ) {
                         Text(
                             text = "Don't have an account?",
-                            color = Color(0xFF9AA0C8),
+                            color = subtitleColor,
                             fontSize = 14.sp,
                         )
                         TextButton(onClick = onSignUp) {
                             Text(
                                 text = "Sign Up",
-                                color = Color(0xFF4248B5),
+                                color = titleColor,
                                 fontSize = 14.sp,
-                                fontWeight = FontWeight.SemiBold,
+                                fontWeight = FontWeight.Bold,
                             )
                         }
                     }
+                    
+                    Spacer(modifier = Modifier.height(48.dp))
                 }
             }
         }
