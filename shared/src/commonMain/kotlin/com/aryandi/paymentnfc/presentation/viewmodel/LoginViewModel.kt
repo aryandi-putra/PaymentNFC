@@ -5,14 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.aryandi.paymentnfc.domain.model.User
 import com.aryandi.paymentnfc.domain.usecase.LoginUseCase
 import com.aryandi.paymentnfc.logging.KermitLogger
+import com.aryandi.paymentnfc.util.launchSafe
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 /**
  * MVI:
@@ -71,7 +71,7 @@ class LoginViewModel(
     }
 
     private fun submitLogin() {
-        viewModelScope.launch {
+        viewModelScope.launchSafe {
             val (username, password) = uiState.value.let { it.username to it.password }
 
             // Reset state and show loading
