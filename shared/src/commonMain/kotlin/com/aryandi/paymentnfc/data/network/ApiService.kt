@@ -1,5 +1,6 @@
 package com.aryandi.paymentnfc.data.network
 
+import com.aryandi.paymentnfc.logging.KermitLogger
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
@@ -16,7 +17,7 @@ abstract class ApiService(protected val httpClient: HttpClient) {
         endpoint: String,
         parameters: Map<String, String> = emptyMap()
     ): Result<T> {
-        return try {
+        return runCatching {
             val response = httpClient.get(endpoint) {
                 url {
                     parameters.forEach { (key, value) ->
@@ -24,9 +25,13 @@ abstract class ApiService(protected val httpClient: HttpClient) {
                     }
                 }
             }
-            Result.success(response.body<T>())
-        } catch (e: Exception) {
-            Result.failure(e)
+            response.body<T>()
+        }.onFailure { e ->
+            KermitLogger.logNetworkError(
+                url = endpoint,
+                errorMessage = "GET request failed: ${e.message}",
+                throwable = e
+            )
         }
     }
     
@@ -34,14 +39,18 @@ abstract class ApiService(protected val httpClient: HttpClient) {
         endpoint: String,
         body: B
     ): Result<T> {
-        return try {
+        return runCatching {
             val response = httpClient.post(endpoint) {
                 setBody(body)
                 contentType(ContentType.Application.Json)
             }
-            Result.success(response.body<T>())
-        } catch (e: Exception) {
-            Result.failure(e)
+            response.body<T>()
+        }.onFailure { e ->
+            KermitLogger.logNetworkError(
+                url = endpoint,
+                errorMessage = "POST request failed: ${e.message}",
+                throwable = e
+            )
         }
     }
     
@@ -49,23 +58,31 @@ abstract class ApiService(protected val httpClient: HttpClient) {
         endpoint: String,
         body: B
     ): Result<T> {
-        return try {
+        return runCatching {
             val response = httpClient.put(endpoint) {
                 setBody(body)
                 contentType(ContentType.Application.Json)
             }
-            Result.success(response.body<T>())
-        } catch (e: Exception) {
-            Result.failure(e)
+            response.body<T>()
+        }.onFailure { e ->
+            KermitLogger.logNetworkError(
+                url = endpoint,
+                errorMessage = "PUT request failed: ${e.message}",
+                throwable = e
+            )
         }
     }
     
     protected suspend inline fun <reified T> delete(endpoint: String): Result<T> {
-        return try {
+        return runCatching {
             val response = httpClient.delete(endpoint)
-            Result.success(response.body<T>())
-        } catch (e: Exception) {
-            Result.failure(e)
+            response.body<T>()
+        }.onFailure { e ->
+            KermitLogger.logNetworkError(
+                url = endpoint,
+                errorMessage = "DELETE request failed: ${e.message}",
+                throwable = e
+            )
         }
     }
 }

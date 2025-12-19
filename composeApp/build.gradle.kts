@@ -1,4 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -7,7 +6,6 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.buildconfig)
 }
 
 kotlin {
@@ -21,13 +19,19 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.androidx.navigation.compose)
             implementation(libs.ktor.client.android)
             implementation(libs.kotlinx.coroutines.android)
+
+            // Koin (Android)
+            implementation(libs.koin.android)
+            implementation(libs.koin.compose)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
@@ -44,7 +48,6 @@ kotlin {
             
             // Koin
             implementation(libs.koin.core)
-            implementation(libs.koin.compose)
             
             // Ktor
             implementation(libs.ktor.client.core)
@@ -71,26 +74,37 @@ android {
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField("String", "BASE_URL", "\"https://api.paymentnfc.com\"")
+        buildConfigField("Boolean", "IS_DEBUG", "false")
     }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    buildFeatures {
+        buildConfig = true
+    }
     buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
+        debug {
+            buildConfigField("String", "BASE_URL", "\"https://api.dev.paymentnfc.com\"")
+            buildConfigField("Boolean", "IS_DEBUG", "true")
+        }
+        release {
+            buildConfigField("String", "BASE_URL", "\"https://api.paymentnfc.com\"")
+            buildConfigField("Boolean", "IS_DEBUG", "false")
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-}
-
-buildConfig {
-    packageName = "com.aryandi.paymentnfc"
-    buildConfigField("String", "API_URL", "\"https://api.example.com\"")
 }
 
 dependencies {
