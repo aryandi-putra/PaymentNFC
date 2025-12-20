@@ -3,9 +3,9 @@ This is a Kotlin Multiplatform project targeting Android and iOS. I use a fintec
 [Fintech Figma](https://www.figma.com/community/file/1352194292067779907)
 [Home Transaction Figma](https://www.figma.com/community/file/1333755496595563984)
 
-<img width="540" height="1110" alt="Screenshot_20251220_134118" src="https://github.com/user-attachments/assets/c6a04da1-7d5c-488c-a3c9-8d0081ae98e0" />
+<img width="270" height="555" alt="Screenshot_20251220_134118" src="https://github.com/user-attachments/assets/c6a04da1-7d5c-488c-a3c9-8d0081ae98e0" />
 
-<img width="540" height="1110" alt="Screenshot_20251220_134131" src="https://github.com/user-attachments/assets/17159e93-8e2c-4bd6-ac2b-79bbf0644b9c" />
+<img width="270" height="555" alt="Screenshot_20251220_134131" src="https://github.com/user-attachments/assets/17159e93-8e2c-4bd6-ac2b-79bbf0644b9c" />
 
 The project follows several architectural approaches. Currently, I use a shared ViewModel in the shared module. For future development, the decision to keep ViewModels in the shared module or move them to platform-specific layers will depend on the iOS implementation requirements.
 
