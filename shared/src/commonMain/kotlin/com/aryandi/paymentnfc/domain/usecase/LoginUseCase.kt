@@ -4,7 +4,7 @@ import com.aryandi.paymentnfc.domain.base.UseCase
 import com.aryandi.paymentnfc.domain.model.User
 import com.aryandi.paymentnfc.domain.repository.AuthRepository
 
-class LoginUseCase(
+open class LoginUseCase(
     private val authRepository: AuthRepository
 ) : UseCase<LoginUseCase.Params, User>() {
     

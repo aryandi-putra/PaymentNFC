@@ -49,7 +49,7 @@ class LoginViewModel(
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    private val _events = MutableSharedFlow<LoginEvent>(extraBufferCapacity = 1)
+    private val _events = MutableSharedFlow<LoginEvent>(replay = 1, extraBufferCapacity = 1)
     val events: SharedFlow<LoginEvent> = _events.asSharedFlow()
 
     fun onIntent(intent: LoginIntent) {

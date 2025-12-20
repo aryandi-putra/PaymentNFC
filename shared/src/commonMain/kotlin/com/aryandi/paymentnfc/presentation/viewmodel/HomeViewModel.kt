@@ -3,7 +3,7 @@ package com.aryandi.paymentnfc.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aryandi.paymentnfc.domain.model.Transaction
-import com.aryandi.paymentnfc.domain.repository.HomeRepository
+import com.aryandi.paymentnfc.domain.usecase.GetTransactionsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +26,7 @@ data class HomeUiState(
 
 class HomeViewModel(
     private val userId: String,
-    private val homeRepository: HomeRepository
+    private val getTransactionsUseCase: GetTransactionsUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState(userId = userId))
@@ -48,7 +48,7 @@ class HomeViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             
-            val result = homeRepository.getTransactions()
+            val result = getTransactionsUseCase()
             
             result.fold(
                 onSuccess = { transactions ->
