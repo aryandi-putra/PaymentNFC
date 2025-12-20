@@ -21,6 +21,7 @@ kermit = "2.0.4"
 buildconfig = "5.4.0"
 turbine = "1.2.0"
 mokkery = "2.6.1"
+kotest = "5.9.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -65,6 +66,11 @@ mokkery-library = { module = "dev.mokkery:mokkery-gradle", version.ref = "mokker
 
 # Turbine
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+
+# Kotest
+kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 
 # Build Config
 buildconfig = { module = "com.github.gmazzo:gradle-buildconfig-plugin", version.ref = "buildconfig" }

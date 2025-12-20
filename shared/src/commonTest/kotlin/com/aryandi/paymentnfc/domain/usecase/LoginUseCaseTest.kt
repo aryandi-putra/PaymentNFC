@@ -6,50 +6,46 @@ import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
-import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.result.shouldBeFailure
+import io.kotest.matchers.result.shouldBeSuccess
+import io.kotest.matchers.shouldBe
 
-class LoginUseCaseTest {
+class LoginUseCaseTest : BehaviorSpec({
+    val repository = mock<AuthRepository>()
+    val useCase = LoginUseCase(repository)
 
-    private val repository = mock<AuthRepository>()
-    private val useCase = LoginUseCase(repository)
+    Given("a LoginUseCase") {
+        When("login is successful") {
+            val user = User(
+                id = 1,
+                username = "user",
+                email = "email",
+                firstName = "F",
+                lastName = "L",
+                gender = "G",
+                image = "I",
+                accessToken = "A",
+                refreshToken = "R"
+            )
+            everySuspend { repository.login("user", "pass") } returns Result.success(user)
 
-    @Test
-    fun `invoke calls repository and returns user on success`() = runTest {
-        // Arrange
-        val user = User(
-            id = 1,
-            username = "user",
-            email = "email",
-            firstName = "F",
-            lastName = "L",
-            gender = "G",
-            image = "I",
-            accessToken = "A",
-            refreshToken = "R"
-        )
-        everySuspend { repository.login("user", "pass") } returns Result.success(user)
+            val result = useCase(LoginUseCase.Params("user", "pass"))
 
-        // Act
-        val result = useCase(LoginUseCase.Params("user", "pass"))
+            Then("it should return the user") {
+                result.shouldBeSuccess() shouldBe user
+            }
+        }
 
-        // Assert
-        assertTrue(result.isSuccess)
-        assertEquals(user, result.getOrNull())
+        When("repository returns failure") {
+            val errorMessage = "Error"
+            everySuspend { repository.login(any(), any()) } returns Result.failure(Exception(errorMessage))
+
+            val result = useCase(LoginUseCase.Params("user", "pass"))
+
+            Then("it should return failure with the error message") {
+                result.shouldBeFailure().message shouldBe errorMessage
+            }
+        }
     }
-
-    @Test
-    fun `invoke returns failure on repository error`() = runTest {
-        // Arrange
-        everySuspend { repository.login(any(), any()) } returns Result.failure(Exception("Error"))
-
-        // Act
-        val result = useCase(LoginUseCase.Params("user", "pass"))
-
-        // Assert
-        assertTrue(result.isFailure)
-        assertEquals("Error", result.exceptionOrNull()?.message)
-    }
-}
+})

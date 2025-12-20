@@ -5,48 +5,51 @@ import com.aryandi.paymentnfc.data.network.HomeApiService
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.collections.shouldHaveSize
+import io.kotest.matchers.result.shouldBeFailure
+import io.kotest.matchers.result.shouldBeSuccess
+import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
-class HomeRepositoryImplTest {
+class HomeRepositoryImplTest : FunSpec({
 
-    private val apiService = mock<HomeApiService>()
-    private val repository = HomeRepositoryImpl(apiService)
+    val apiService = mock<HomeApiService>()
+    val repository = HomeRepositoryImpl(apiService)
 
-    @Test
-    fun `getTransactions returns mapped list on success`() = runTest {
-        // Arrange
-        val dtos = listOf(
-            TransactionDto("Test", "Date", "$ 10", "confirmed")
-        )
-        everySuspend { apiService.getTransfers() } returns Result.success(dtos)
+    test("getTransactions returns mapped list on success") {
+        runTest {
+            // Arrange
+            val dtos = listOf(
+                TransactionDto("Test", "Date", "$ 10", "confirmed")
+            )
+            everySuspend { apiService.getTransfers() } returns Result.success(dtos)
 
-        // Act
-        val result = repository.getTransactions()
+            // Act
+            val result = repository.getTransactions()
 
-        // Assert
-        assertTrue(result.isSuccess)
-        val transactions = result.getOrNull()
-        assertEquals(1, transactions?.size)
-        assertEquals("Test", transactions?.get(0)?.title)
-        assertEquals("Date", transactions?.get(0)?.date)
-        assertEquals("$ 10", transactions?.get(0)?.amount)
-        assertEquals("confirmed", transactions?.get(0)?.status)
+            // Assert
+            result.shouldBeSuccess().apply {
+                shouldHaveSize(1)
+                this[0].title shouldBe "Test"
+                this[0].date shouldBe "Date"
+                this[0].amount shouldBe "$ 10"
+                this[0].status shouldBe "confirmed"
+            }
+        }
     }
 
-    @Test
-    fun `getTransactions returns failure on api error`() = runTest {
-        // Arrange
-        val exception = Exception("API Error")
-        everySuspend { apiService.getTransfers() } returns Result.failure(exception)
+    test("getTransactions returns failure on api error") {
+        runTest {
+            // Arrange
+            val exception = Exception("API Error")
+            everySuspend { apiService.getTransfers() } returns Result.failure(exception)
 
-        // Act
-        val result = repository.getTransactions()
+            // Act
+            val result = repository.getTransactions()
 
-        // Assert
-        assertTrue(result.isFailure)
-        assertEquals("API Error", result.exceptionOrNull()?.message)
+            // Assert
+            result.shouldBeFailure().message shouldBe "API Error"
+        }
     }
-}
+})

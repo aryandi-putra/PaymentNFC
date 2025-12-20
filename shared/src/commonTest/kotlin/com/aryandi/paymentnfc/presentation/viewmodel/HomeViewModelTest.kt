@@ -7,6 +7,11 @@ import dev.mokkery.answering.returns
 import dev.mokkery.answering.sequentially
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.collections.shouldBeEmpty
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -14,32 +19,22 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class HomeViewModelTest {
+class HomeViewModelTest : StringSpec({
 
-    private val getTransactionsUseCase = mock<GetTransactionsUseCase>()
-    private val testDispatcher = StandardTestDispatcher()
+    val getTransactionsUseCase = mock<GetTransactionsUseCase>()
+    val testDispatcher = StandardTestDispatcher()
 
-    @BeforeTest
-    fun setup() {
+    beforeTest {
         Dispatchers.setMain(testDispatcher)
     }
 
-    @AfterTest
-    fun tearDown() {
+    afterTest {
         Dispatchers.resetMain()
     }
 
-    @Test
-    fun `initialization loads transactions successfully`() = runTest {
+    "initialization loads transactions successfully" {
         // Arrange
         val transactions = listOf(
             Transaction("Test", "Date", "$ 10", "confirmed")
@@ -56,15 +51,14 @@ class HomeViewModelTest {
                 state = awaitItem()
             }
             
-            assertEquals("test", state.userName)
-            assertEquals(transactions, state.transactions)
-            assertNull(state.error)
-            assertFalse(state.isLoading)
+            state.userName shouldBe "test"
+            state.transactions shouldBe transactions
+            state.error.shouldBeNull()
+            state.isLoading.shouldBeFalse()
         }
     }
 
-    @Test
-    fun `initialization sets error on failure`() = runTest {
+    "initialization sets error on failure" {
         // Arrange
         val errorMessage = "Network Error"
         everySuspend { getTransactionsUseCase() } returns Result.failure(Exception(errorMessage))
@@ -75,13 +69,12 @@ class HomeViewModelTest {
 
         // Assert
         val state = viewModel.uiState.value
-        assertEquals(errorMessage, state.error)
-        assertTrue(state.transactions.isEmpty())
-        assertFalse(state.isLoading)
+        state.error shouldBe errorMessage
+        state.transactions.shouldBeEmpty()
+        state.isLoading.shouldBeFalse()
     }
 
-    @Test
-    fun `onIntent Refresh reloads data`() = runTest {
+    "onIntent Refresh reloads data" {
         // Arrange
         val transactions1 = listOf(Transaction("T1", "D1", "$ 1", "confirmed"))
         val transactions2 = listOf(Transaction("T2", "D2", "$ 2", "confirmed"))
@@ -93,12 +86,12 @@ class HomeViewModelTest {
         // Act
         val viewModel = HomeViewModel("user", getTransactionsUseCase)
         testDispatcher.scheduler.runCurrent()
-        assertEquals(transactions1, viewModel.uiState.value.transactions)
+        viewModel.uiState.value.transactions shouldBe transactions1
 
         viewModel.onIntent(HomeIntent.Refresh)
         testDispatcher.scheduler.runCurrent()
 
         // Assert
-        assertEquals(transactions2, viewModel.uiState.value.transactions)
+        viewModel.uiState.value.transactions shouldBe transactions2
     }
-}
+})
