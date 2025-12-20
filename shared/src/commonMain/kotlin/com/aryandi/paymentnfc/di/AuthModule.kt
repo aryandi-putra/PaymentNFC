@@ -1,6 +1,7 @@
 package com.aryandi.paymentnfc.di
 
 import com.aryandi.paymentnfc.data.network.AuthApiService
+import com.aryandi.paymentnfc.data.network.AuthApiServiceImpl
 import com.aryandi.paymentnfc.data.repository.AuthRepositoryImpl
 import com.aryandi.paymentnfc.domain.repository.AuthRepository
 import com.aryandi.paymentnfc.domain.usecase.LoginUseCase
@@ -9,7 +10,7 @@ import org.koin.dsl.module
 
 val authModule = module {
     // API Service
-    single { AuthApiService(get()) }
+    single<AuthApiService> { AuthApiServiceImpl(get()) }
     
     // Repository
     single<AuthRepository> { AuthRepositoryImpl(get()) }

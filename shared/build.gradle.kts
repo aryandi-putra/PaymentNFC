@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.mokkery)
 }
 
 kotlin {
@@ -54,7 +55,7 @@ kotlin {
             // Platform-specific Ktor client for Android
             implementation(libs.ktor.client.android)
         }
-        
+
         iosMain.dependencies {
             // Platform-specific Ktor client for iOS
             implementation(libs.ktor.client.darwin)
@@ -62,6 +63,10 @@ kotlin {
         
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.turbine)
+            implementation(libs.kotest.assertions)
+            implementation(libs.kotest.framework.engine)
         }
     }
 }
@@ -75,5 +80,10 @@ android {
     }
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
     }
 }
