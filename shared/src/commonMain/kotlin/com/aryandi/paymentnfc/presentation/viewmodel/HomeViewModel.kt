@@ -3,6 +3,7 @@ package com.aryandi.paymentnfc.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aryandi.paymentnfc.domain.model.Transaction
+import com.aryandi.paymentnfc.domain.repository.HomeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,14 +17,16 @@ sealed interface HomeIntent {
 
 data class HomeUiState(
     val userId: String = "",
-    val userName: String = "John Smith",
+    val userName: String = "Guest",
     val cardsCount: Int = 3,
     val transactions: List<Transaction> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val error: String? = null
 )
 
 class HomeViewModel(
-    private val userId: String
+    private val userId: String,
+    private val homeRepository: HomeRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState(userId = userId))
@@ -43,25 +46,30 @@ class HomeViewModel(
 
     private fun loadHomeData() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update { it.copy(isLoading = true, error = null) }
             
-            // Mocking data loading
-            val mockTransactions = listOf(
-                Transaction("Currency exchange", "17 Sep 2023 11:21 AM", "$ 350.00", "pending"),
-                Transaction("Cash-in", "17 Sep 2023 10:34 AM", "$ 100.00", "confirmed"),
-                Transaction("Cashback from purchase", "16 Sep 2023 16:08 PM", "$ 1.75", "confirmed"),
-                Transaction("Transfer to card", "16 Sep 2023 11:21 AM", "$ 9000.00", "confirmed"),
-                Transaction("Transfer to card", "16 Sep 2023 11:21 AM", "$ 9000.00", "confirmed")
+            val result = homeRepository.getTransactions()
+            
+            result.fold(
+                onSuccess = { transactions ->
+                    _uiState.update { 
+                        it.copy(
+                            userName = if (userId.contains("@")) userId.substringBefore("@") else userId,
+                            cardsCount = 3,
+                            transactions = transactions,
+                            isLoading = false
+                        ) 
+                    }
+                },
+                onFailure = { error ->
+                    _uiState.update { 
+                        it.copy(
+                            isLoading = false,
+                            error = error.message ?: "Failed to load transactions"
+                        ) 
+                    }
+                }
             )
-            
-            _uiState.update { 
-                it.copy(
-                    userName = if (userId.contains("@")) userId.substringBefore("@") else userId,
-                    cardsCount = 3,
-                    transactions = mockTransactions,
-                    isLoading = false
-                ) 
-            }
         }
     }
 }
