@@ -5,7 +5,10 @@ import com.aryandi.paymentnfc.data.network.AuthApiServiceImpl
 import com.aryandi.paymentnfc.data.repository.AuthRepositoryImpl
 import com.aryandi.paymentnfc.domain.repository.AuthRepository
 import com.aryandi.paymentnfc.domain.usecase.LoginUseCase
+import com.aryandi.paymentnfc.domain.usecase.RegisterUseCase
 import com.aryandi.paymentnfc.presentation.viewmodel.LoginViewModel
+import com.aryandi.paymentnfc.presentation.viewmodel.RegisterViewModel
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val authModule = module {
@@ -16,8 +19,10 @@ val authModule = module {
     single<AuthRepository> { AuthRepositoryImpl(get()) }
     
     // Use Cases
-    factory { LoginUseCase(get()) }
+    factoryOf(::LoginUseCase)
+    factoryOf(::RegisterUseCase)
     
     // ViewModels
-    factory { LoginViewModel(get()) }
+    factoryOf(::LoginViewModel)
+    factoryOf(::RegisterViewModel)
 }
