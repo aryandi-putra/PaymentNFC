@@ -11,7 +11,7 @@ open class HomeApiServiceImpl(httpClient: HttpClient) : ApiService(httpClient), 
     
     override suspend fun getTransfers(): Result<List<TransactionDto>> {
         return get<List<TransactionDto>>(
-            endpoint = "https://paymentnfc.free.beeceptor.com/transfer_list"
+            endpoint = "${ApiConstant.BASE_URL}${ApiConstant.ENDPOINT_TRANSFER_LIST}"
         )
     }
 }
