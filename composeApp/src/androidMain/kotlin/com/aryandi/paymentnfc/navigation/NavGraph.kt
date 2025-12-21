@@ -7,8 +7,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.aryandi.paymentnfc.home.HomeScreen
 import com.aryandi.paymentnfc.landing.LandingPageScreen
-import com.aryandi.paymentnfc.signin.SignInScreen
-import com.aryandi.paymentnfc.signup.SignUpScreen
+import com.aryandi.paymentnfc.login.SignInScreen
+import com.aryandi.paymentnfc.register.SignUpScreen
 
 @Composable
 fun NavGraph(
@@ -48,11 +48,16 @@ fun NavGraph(
                 onBack = {
                     navController.navigateUp()
                 },
-                onSignUp = { name, email, password ->
-                    navController.navigate(Screen.Home(userId = email)) {
+                onSignUpSuccess = { userId ->
+                    navController.navigate(Screen.Home(userId = userId)) {
                         popUpTo(Screen.Landing) { inclusive = true }
                     }
                 },
+                onSignIn = {
+                    navController.navigate(Screen.SignIn) {
+                        popUpTo(Screen.SignUp) { inclusive = true }
+                    }
+                }
             )
         }
         
