@@ -47,4 +47,26 @@ class AuthRepositoryImplTest : FunSpec({
 
         result.shouldBeFailure().message shouldBe errorMessage
     }
+
+    test("verifyOtp returns success when otp is 123456") {
+        val email = "test@example.com"
+        val result = repository.verifyOtp(email, "123456")
+
+        result.shouldBeSuccess().apply {
+            username shouldBe "test"
+            this.email shouldBe email
+        }
+    }
+
+    test("verifyOtp returns failure when otp is not 123456") {
+        val result = repository.verifyOtp("test@example.com", "wrong")
+
+        result.shouldBeFailure().message shouldBe "Invalid OTP"
+    }
+
+    test("resendOtp returns success") {
+        val result = repository.resendOtp("test@example.com")
+
+        result.shouldBeSuccess() shouldBe Unit
+    }
 })
