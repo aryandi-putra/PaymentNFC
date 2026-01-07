@@ -26,4 +26,11 @@ open class AuthApiServiceImpl(httpClient: HttpClient) : ApiService(httpClient), 
             body = request
         )
     }
+
+    override suspend fun register(request: RegisterRequest): Result<LoginResponse> {
+        return post<LoginResponse, RegisterRequest>(
+            endpoint = "https://paymentnfc.free.beeceptor.com/register",
+            body = request
+        )
+    }
 }
