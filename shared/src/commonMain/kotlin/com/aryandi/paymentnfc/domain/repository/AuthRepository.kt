@@ -10,4 +10,7 @@ interface AuthRepository {
         firstName: String,
         lastName: String
     ): Result<User>
+
+    suspend fun verifyOtp(emailOrPhone: String, otp: String): Result<User>
+    suspend fun resendOtp(emailOrPhone: String): Result<Unit>
 }
