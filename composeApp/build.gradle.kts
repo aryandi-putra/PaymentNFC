@@ -75,7 +75,6 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        buildConfigField("String", "BASE_URL", "\"https://api.paymentnfc.com\"")
         buildConfigField("Boolean", "IS_DEBUG", "false")
     }
     packaging {
@@ -88,11 +87,9 @@ android {
     }
     buildTypes {
         debug {
-            buildConfigField("String", "BASE_URL", "\"https://api.dev.paymentnfc.com\"")
             buildConfigField("Boolean", "IS_DEBUG", "true")
         }
         release {
-            buildConfigField("String", "BASE_URL", "\"https://api.paymentnfc.com\"")
             buildConfigField("Boolean", "IS_DEBUG", "false")
             isMinifyEnabled = true
             proguardFiles(

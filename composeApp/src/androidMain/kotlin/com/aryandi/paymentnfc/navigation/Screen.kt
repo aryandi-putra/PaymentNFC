@@ -14,5 +14,8 @@ sealed interface Screen {
     data object SignUp : Screen
     
     @Serializable
+    data class Otp(val emailOrPhone: String) : Screen
+    
+    @Serializable
     data class Home(val userId: String) : Screen
 }
