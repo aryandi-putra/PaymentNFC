@@ -10,7 +10,6 @@ import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.result.shouldBeFailure
 import io.kotest.matchers.result.shouldBeSuccess
 import io.kotest.matchers.shouldBe
-import kotlinx.coroutines.test.runTest
 
 class AuthRepositoryImplTest : FunSpec({
 

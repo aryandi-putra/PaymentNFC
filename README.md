@@ -7,6 +7,8 @@ This is a Kotlin Multiplatform project targeting Android and iOS. I use a fintec
 
 <img width="270" height="555" alt="Screenshot_20251220_134131" src="https://github.com/user-attachments/assets/17159e93-8e2c-4bd6-ac2b-79bbf0644b9c" />
 
+You can use "123456" for dummy OTP
+
 The project follows several architectural approaches. Currently, I use a shared ViewModel in the shared module. For future development, the decision to keep ViewModels in the shared module or move them to platform-specific layers will depend on the iOS implementation requirements.
 
 This application uses a mock Beeceptor API to handle registration, login, and dummy transaction history.

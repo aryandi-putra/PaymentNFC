@@ -1,6 +1,7 @@
 package com.aryandi.paymentnfc.login
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,6 +63,7 @@ fun SignInScreen(
     onBack: () -> Unit = {},
     onSignInSuccess: (userId: String) -> Unit = {},
     onSignUp: () -> Unit = {},
+    onForgotPassword: (String) -> Unit = {},
 ) {
     val viewModel: LoginViewModel = koinViewModel()
 
@@ -244,7 +246,8 @@ fun SignInScreen(
                         text = "Forgot your password ?",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 4.dp),
+                            .padding(horizontal = 4.dp)
+                            .clickable { onForgotPassword(uiState.username) },
                         textAlign = TextAlign.End,
                         color = Color(0xFFB0B4D4),
                         fontSize = 12.sp,

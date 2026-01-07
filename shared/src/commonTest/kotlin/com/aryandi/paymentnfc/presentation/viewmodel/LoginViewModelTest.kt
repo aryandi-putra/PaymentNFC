@@ -1,8 +1,8 @@
 package com.aryandi.paymentnfc.presentation.viewmodel
 
+import app.cash.turbine.test
 import com.aryandi.paymentnfc.domain.model.User
 import com.aryandi.paymentnfc.domain.usecase.LoginUseCase
-import app.cash.turbine.test
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
@@ -11,7 +11,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
