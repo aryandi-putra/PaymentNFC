@@ -142,8 +142,20 @@ fun OtpScreen(
                     OtpInputField(
                         otpValue = uiState.otp,
                         onOtpChange = { viewModel.onIntent(OtpIntent.OtpChanged(it)) },
-                        focusRequester = focusRequester
+                        focusRequester = focusRequester,
+                        isError = uiState.error != null
                     )
+
+                    if (uiState.error != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = uiState.error!!,
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = 12.sp,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(48.dp))
 
@@ -208,7 +220,8 @@ fun OtpInputField(
     otpValue: String,
     onOtpChange: (String) -> Unit,
     focusRequester: FocusRequester,
-    length: Int = 6
+    length: Int = 6,
+    isError: Boolean = false
 ) {
     Box(
         modifier = Modifier.fillMaxWidth(),
@@ -253,7 +266,11 @@ fun OtpInputField(
                         .size(48.dp)
                         .border(
                             width = 2.dp,
-                            color = if (isFocused) Color(0xFF4285F4) else Color(0xFFE0E0E0),
+                            color = when {
+                                isError -> MaterialTheme.colorScheme.error
+                                isFocused -> Color(0xFF4285F4)
+                                else -> Color(0xFFE0E0E0)
+                            },
                             shape = RoundedCornerShape(12.dp)
                         )
                         .background(Color.White, RoundedCornerShape(12.dp)),
