@@ -26,7 +26,6 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview
 fun SignUpScreen(
     viewModel: RegisterViewModel = koinViewModel(),
     onBack: () -> Unit = {},
@@ -227,4 +226,16 @@ fun SignUpTextField(
             focusedContainerColor = Color.White
         )
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SignUpScreenPreview() {
+    Surface {
+        SignUpScreen(
+            onBack = {},
+            onSignUpSuccess = {},
+            onSignIn = {}
+        )
+    }
 }

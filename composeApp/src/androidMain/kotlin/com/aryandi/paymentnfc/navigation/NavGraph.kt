@@ -86,6 +86,9 @@ fun NavGraph(
                         popUpTo(Screen.Landing) { inclusive = true }
                     }
                 },
+                onNavigateToCards = {
+                    navController.navigate(Screen.Cards)
+                }
             )
         }
         

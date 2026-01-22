@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aryandi.paymentnfc.domain.model.Transaction
 import com.aryandi.paymentnfc.presentation.viewmodel.HomeViewModel
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -72,10 +72,10 @@ val ConfirmedText = Color(0xFF2ECC71)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview
 fun HomeScreen(
-    userId: String,
-    onBack: () -> Unit,
+    userId: String = "",
+    onBack: () -> Unit = {},
+    onNavigateToCards: () -> Unit = {},
     viewModel: HomeViewModel = koinViewModel(parameters = { parametersOf(userId) })
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -89,7 +89,7 @@ fun HomeScreen(
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        bottomBar = { BottomNavBar() }
+        bottomBar = { BottomNavBar(onNavigateToCards = onNavigateToCards) }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -445,7 +445,7 @@ fun StatusBadge(status: String) {
 }
 
 @Composable
-fun BottomNavBar() {
+fun BottomNavBar(onNavigateToCards: () -> Unit = {}) {
     NavigationBar(
         containerColor = BackgroundWhite,
         tonalElevation = 8.dp
@@ -465,7 +465,7 @@ fun BottomNavBar() {
         )
         NavigationBarItem(
             selected = false,
-            onClick = { },
+            onClick = onNavigateToCards,
             icon = { Icon(Icons.Default.Star, contentDescription = "AI Chat") },
             label = { Text("AI Chat") }
         )
@@ -476,4 +476,14 @@ fun BottomNavBar() {
             label = { Text("More") }
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+    HomeScreen(
+        userId = "12345",
+        onBack = {},
+        onNavigateToCards = {}
+    )
 }

@@ -14,9 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // Colors
 val PrimaryBlue = Color(0xFF2E7DED)
@@ -33,7 +33,6 @@ val TextGray = Color(0xFF8E8E93)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview
 fun CardsScreen(
     onBack: () -> Unit = {},
     onEdit: () -> Unit = {}
@@ -407,4 +406,10 @@ data class CardData(
 enum class CardType {
     VISA,
     MASTERCARD
+}
+
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun CardsScreenPreview() {
+    CardsScreen()
 }
