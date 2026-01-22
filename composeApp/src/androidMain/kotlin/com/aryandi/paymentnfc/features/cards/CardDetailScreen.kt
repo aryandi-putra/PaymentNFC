@@ -29,7 +29,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,8 +43,10 @@ import com.aryandi.paymentnfc.domain.model.Transaction
 import com.aryandi.paymentnfc.ui.components.CardData
 import com.aryandi.paymentnfc.ui.components.CardType
 import com.aryandi.paymentnfc.ui.components.DetailedCreditCard
+import com.aryandi.paymentnfc.ui.components.DeleteCardDialog
 import com.aryandi.paymentnfc.ui.components.FilledRoundedTextField
 import com.aryandi.paymentnfc.ui.components.FilterButton
+import com.aryandi.paymentnfc.ui.components.SuccessDialog
 import com.aryandi.paymentnfc.ui.components.TransactionItem
 import com.aryandi.paymentnfc.ui.theme.AppColors
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -70,6 +75,9 @@ fun CardDetailScreen(
         )
     }
 
+    var showSuccessDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     val scaffoldState = rememberBottomSheetScaffoldState()
 
     BottomSheetScaffold(
@@ -87,7 +95,7 @@ fun CardDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = { showDeleteDialog = true }) {
                         Icon(
                             imageVector = Icons.Default.MoreHoriz,
                             contentDescription = "More",
@@ -190,7 +198,7 @@ fun CardDetailScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 
                 OutlinedButton(
-                    onClick = { },
+                    onClick = { showSuccessDialog = true },
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -202,6 +210,22 @@ fun CardDetailScreen(
                 }
             }
         }
+    }
+
+    if (showSuccessDialog) {
+        SuccessDialog(
+            onDismiss = { showSuccessDialog = false }
+        )
+    }
+
+    if (showDeleteDialog) {
+        DeleteCardDialog(
+            onDelete = { 
+                showDeleteDialog = false
+                // Logic to delete card could go here
+            },
+            onDismiss = { showDeleteDialog = false }
+        )
     }
 }
 
