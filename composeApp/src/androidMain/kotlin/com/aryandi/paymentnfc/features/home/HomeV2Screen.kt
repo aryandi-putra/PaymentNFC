@@ -23,7 +23,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeV2Screen(
-    onNavigateToCards: () -> Unit = {}
+    onNavigateToCards: () -> Unit = {},
+    onNavigateToCardDetail: () -> Unit = {}
 ) {
     val pagerState = rememberPagerState(pageCount = { 3 })
     
@@ -132,7 +133,8 @@ fun HomeV2Screen(
                         cards = cards,
                         stackOffset = 100.dp,
                         isCardNumberVisible = isCardNumberVisible,
-                        onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible }
+                        onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
+                        onCardLongClick = { onNavigateToCardDetail() }
                     )
                 }
             }

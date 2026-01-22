@@ -21,4 +21,7 @@ sealed interface Screen {
     
     @Serializable
     data object Cards : Screen
+    
+    @Serializable
+    data object CardDetail : Screen
 }

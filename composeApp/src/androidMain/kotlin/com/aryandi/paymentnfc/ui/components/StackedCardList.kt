@@ -18,6 +18,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.zIndex
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 
 /**
  * Stacked Card List Component
@@ -27,14 +30,17 @@ import androidx.compose.ui.zIndex
  * @param stackOffset Vertical offset between stacked cards (default: 70.dp)
  * @param isCardNumberVisible Whether the card number is visible for the expanded card
  * @param onVisibilityToggle Callback to toggle card number visibility
+ * @param onCardLongClick Callback when a card is long pressed
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun StackedCardList(
     cards: List<CardData>,
     modifier: Modifier = Modifier,
     stackOffset: Dp = 70.dp,
     isCardNumberVisible: Boolean = false,
-    onVisibilityToggle: () -> Unit = {}
+    onVisibilityToggle: () -> Unit = {},
+    onCardLongClick: (CardData) -> Unit = {}
 ) {
     val cardHeight = 200.dp
     // Add padding to top to allow pop-up animation without clipping
@@ -67,12 +73,16 @@ fun StackedCardList(
                 modifier = Modifier
                     .offset(y = animatedOffsetY)
                     .zIndex(if (isSelected) 1f else 0f) // Bring to front visually if needed
-                    .clickable(
+                    .combinedClickable(
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = null // Disable ripple for cleaner custom animation
-                    ) {
-                        selectedCardIndex = if (selectedCardIndex == index) -1 else index
-                    }
+                        indication = null, // Disable ripple for cleaner custom animation
+                        onClick = {
+                            selectedCardIndex = if (selectedCardIndex == index) -1 else index
+                        },
+                        onLongClick = {
+                            onCardLongClick(card)
+                        }
+                    )
             ) {
                 CreditCard(
                     cardData = card,

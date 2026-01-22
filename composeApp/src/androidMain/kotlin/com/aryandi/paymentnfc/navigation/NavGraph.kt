@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.aryandi.paymentnfc.features.cards.CardDetailScreen
 import com.aryandi.paymentnfc.features.cards.CardsScreen
 import com.aryandi.paymentnfc.features.home.HomeScreen
 import com.aryandi.paymentnfc.features.home.HomeV2Screen
@@ -83,6 +84,9 @@ fun NavGraph(
             HomeV2Screen(
                 onNavigateToCards = {
                     navController.navigate(Screen.Cards)
+                },
+                onNavigateToCardDetail = {
+                    navController.navigate(Screen.CardDetail)
                 }
             )
             /* 
@@ -111,6 +115,17 @@ fun NavGraph(
                 },
                 onNavigateToHome = {
                     navController.navigate(Screen.Home(userId = "test"))
+                },
+                onNavigateToCardDetail = {
+                    navController.navigate(Screen.CardDetail)
+                }
+            )
+        }
+
+        composable<Screen.CardDetail> {
+            CardDetailScreen(
+                onBack = {
+                    navController.navigateUp()
                 }
             )
         }

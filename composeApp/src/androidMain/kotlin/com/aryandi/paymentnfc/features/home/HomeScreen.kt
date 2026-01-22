@@ -55,6 +55,7 @@ import com.aryandi.paymentnfc.ui.components.AppBottomNavBar
 import com.aryandi.paymentnfc.ui.components.BottomNavTab
 import com.aryandi.paymentnfc.ui.components.SectionHeaderWithViewAll
 import com.aryandi.paymentnfc.ui.components.SimpleCreditCard
+import com.aryandi.paymentnfc.ui.components.TransactionItem
 import com.aryandi.paymentnfc.ui.theme.AppColors
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -311,58 +312,6 @@ fun CardsSection(count: Int) {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun TransactionItem(transaction: Transaction) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .background(AppColors.BackgroundGray, RoundedCornerShape(12.dp)),
-            contentAlignment = Alignment.Center
-        ) {
-            val icon = when(transaction.title) {
-                "Currency exchange" -> Icons.Default.CurrencyExchange
-                "Cash-in" -> Icons.Default.AccountBalanceWallet
-                "Cashback from purchase" -> Icons.Default.ShoppingCart
-                else -> Icons.Default.CreditCard
-            }
-            Icon(imageVector = icon, contentDescription = null, tint = AppColors.PrimaryBlue)
-        }
-        
-        Spacer(modifier = Modifier.width(16.dp))
-        
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = transaction.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Text(text = transaction.date, fontSize = 12.sp, color = Color.Gray)
-        }
-        
-        Column(horizontalAlignment = Alignment.End) {
-            Text(text = transaction.amount, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Spacer(modifier = Modifier.height(4.dp))
-            StatusBadge(transaction.status)
-        }
-    }
-}
-
-@Composable
-fun StatusBadge(status: String) {
-    val bgColor = if (status == "pending") AppColors.PendingBg else AppColors.ConfirmedBg
-    val textColor = if (status == "pending") AppColors.PendingText else AppColors.ConfirmedText
-    
-    Box(
-        modifier = Modifier
-            .background(bgColor, RoundedCornerShape(4.dp))
-            .padding(horizontal = 8.dp, vertical = 2.dp)
-    ) {
-        Text(text = status, color = textColor, fontSize = 10.sp, fontWeight = FontWeight.Bold)
     }
 }
 

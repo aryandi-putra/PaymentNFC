@@ -35,7 +35,8 @@ fun CardsScreen(
     onBack: () -> Unit = {},
     onEdit: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
-    ) {
+    onNavigateToCardDetail: () -> Unit = {}
+) {
     var isCardNumberVisible by remember { mutableStateOf(false) }
     
     val debitCreditCards = remember {
@@ -220,7 +221,8 @@ fun CardsScreen(
                 StackedCardList(
                     cards = debitCreditCards,
                     isCardNumberVisible = isCardNumberVisible,
-                    onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible }
+                    onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
+                    onCardLongClick = { onNavigateToCardDetail() }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -240,7 +242,8 @@ fun CardsScreen(
                 StackedCardList(
                     cards = memberCards,
                     isCardNumberVisible = isCardNumberVisible,
-                    onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible }
+                    onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
+                    onCardLongClick = { onNavigateToCardDetail() }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -260,7 +263,8 @@ fun CardsScreen(
                 StackedCardList(
                     cards = electronicMoneyCards,
                     isCardNumberVisible = isCardNumberVisible,
-                    onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible }
+                    onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
+                    onCardLongClick = { onNavigateToCardDetail() }
                 )
                 Spacer(modifier = Modifier.height(80.dp))
             }
