@@ -1,4 +1,4 @@
-package com.aryandi.paymentnfc.otp
+package com.aryandi.paymentnfc.features.otp
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,6 +26,7 @@ import com.aryandi.paymentnfc.presentation.viewmodel.OtpEvent
 import com.aryandi.paymentnfc.presentation.viewmodel.OtpIntent
 import com.aryandi.paymentnfc.presentation.viewmodel.OtpViewModel
 import kotlinx.coroutines.flow.collectLatest
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -286,4 +287,10 @@ fun OtpInputField(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun OtpScreenPreview() {
+    OtpScreen(emailOrPhone = "example@email.com")
 }

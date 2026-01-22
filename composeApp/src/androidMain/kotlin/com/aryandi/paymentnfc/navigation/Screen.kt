@@ -18,4 +18,7 @@ sealed interface Screen {
     
     @Serializable
     data class Home(val userId: String) : Screen
+    
+    @Serializable
+    data object Cards : Screen
 }

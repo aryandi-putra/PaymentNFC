@@ -5,11 +5,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.aryandi.paymentnfc.home.HomeScreen
-import com.aryandi.paymentnfc.landing.LandingPageScreen
-import com.aryandi.paymentnfc.login.SignInScreen
-import com.aryandi.paymentnfc.otp.OtpScreen
-import com.aryandi.paymentnfc.register.SignUpScreen
+import com.aryandi.paymentnfc.features.cards.CardsScreen
+import com.aryandi.paymentnfc.features.home.HomeScreen
+import com.aryandi.paymentnfc.features.landing.LandingPageScreen
+import com.aryandi.paymentnfc.features.login.SignInScreen
+import com.aryandi.paymentnfc.features.otp.OtpScreen
+import com.aryandi.paymentnfc.features.register.SignUpScreen
 
 @Composable
 fun NavGraph(
@@ -85,6 +86,17 @@ fun NavGraph(
                         popUpTo(Screen.Landing) { inclusive = true }
                     }
                 },
+            )
+        }
+        
+        composable<Screen.Cards> {
+            CardsScreen(
+                onBack = {
+                    navController.navigateUp()
+                },
+                onEdit = {
+                    // Handle edit action
+                }
             )
         }
     }

@@ -1,4 +1,4 @@
-package com.aryandi.paymentnfc.login
+package com.aryandi.paymentnfc.features.login
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -54,6 +54,7 @@ import com.aryandi.paymentnfc.presentation.viewmodel.LoginEvent
 import com.aryandi.paymentnfc.presentation.viewmodel.LoginIntent
 import com.aryandi.paymentnfc.presentation.viewmodel.LoginViewModel
 import kotlinx.coroutines.flow.collectLatest
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -324,3 +325,8 @@ fun SignInScreen(
     }
 }
 
+@Preview
+@Composable
+fun SignInScreenPreview() {
+    SignInScreen()
+}

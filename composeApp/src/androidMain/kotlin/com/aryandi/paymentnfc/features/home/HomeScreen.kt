@@ -1,4 +1,4 @@
-package com.aryandi.paymentnfc.home
+package com.aryandi.paymentnfc.features.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +46,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -269,7 +271,7 @@ fun QuickActionsSection() {
 }
 
 @Composable
-fun QuickActionButton(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String) {
+fun QuickActionButton(icon: ImageVector, label: String) {
     Button(
         onClick = { },
         colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.2f)),
@@ -383,7 +385,7 @@ fun CreditCardItem() {
                     color = Color.White,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    fontStyle = FontStyle.Italic
                 )
             }
         }

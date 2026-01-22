@@ -1,4 +1,4 @@
-package com.aryandi.paymentnfc.landing
+package com.aryandi.paymentnfc.features.landing
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun LandingPageScreen(
@@ -133,4 +134,10 @@ fun LandingPageScreen(
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun LandingPageScreenPreview() {
+    LandingPageScreen()
 }
