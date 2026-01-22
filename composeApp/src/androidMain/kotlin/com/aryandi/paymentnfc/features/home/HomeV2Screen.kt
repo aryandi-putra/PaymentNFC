@@ -33,7 +33,13 @@ fun HomeV2Screen(
         listOf(
             CardData("AriaBank", CardType.VISA, AppColors.CardOrange),
             CardData("AriaBank", CardType.MASTERCARD, AppColors.CardYellow),
-            CardData("WeBank", CardType.VISA, AppColors.CardOlive, "Alexander Parra", isExpanded = true)
+            CardData(
+                bankName = "WeBank", 
+                cardType = CardType.VISA, 
+                backgroundColor = AppColors.CardOlive, 
+                cardHolder = "Alexander Parra", 
+                isExpanded = true
+            )
         )
     }
     
@@ -41,7 +47,13 @@ fun HomeV2Screen(
         listOf(
             CardData("Alfagift", CardType.MASTERCARD, AppColors.CardBrown),
             CardData("IKEA", CardType.VISA, AppColors.CardYellow),
-            CardData("Starbucks", CardType.VISA, AppColors.CardDarkGreen, "Alexander Parra", isExpanded = true)
+            CardData(
+                bankName = "Starbucks", 
+                cardType = CardType.VISA, 
+                backgroundColor = AppColors.CardDarkGreen, 
+                cardHolder = "Alexander Parra", 
+                isExpanded = true
+            )
         )
     }
     
@@ -49,7 +61,13 @@ fun HomeV2Screen(
         listOf(
             CardData("BNI Tapcash", CardType.MASTERCARD, AppColors.CardOrange),
             CardData("Mandiri E-Money", CardType.VISA, AppColors.CardNavy),
-            CardData("Flazz BCA", CardType.MASTERCARD, AppColors.CardBlue, "Alexander Parra", isExpanded = true)
+            CardData(
+                bankName = "Flazz BCA", 
+                cardType = CardType.MASTERCARD, 
+                backgroundColor = AppColors.CardBlue, 
+                cardHolder = "Alexander Parra", 
+                isExpanded = true
+            )
         )
     }
 

@@ -47,7 +47,10 @@ fun StackedCardList(
     val popUpHeight = 30.dp
     val totalHeight = if (cards.isEmpty()) 0.dp else ((cards.size - 1) * stackOffset.value + cardHeight.value + popUpHeight.value).dp
     
-    var selectedCardIndex by remember { mutableIntStateOf(-1) }
+    // Initialize with the first expanded card index, if any
+    var selectedCardIndex by remember(cards) { 
+        mutableIntStateOf(cards.indexOfFirst { it.isExpanded }) 
+    }
 
     Box(
         modifier = modifier
@@ -87,6 +90,7 @@ fun StackedCardList(
                 CreditCard(
                     cardData = card,
                     isVisible = isCardNumberVisible,
+                    isExpanded = isSelected,
                     onVisibilityToggle = onVisibilityToggle
                 )
             }

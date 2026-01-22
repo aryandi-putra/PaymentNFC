@@ -2,6 +2,7 @@ package com.aryandi.paymentnfc.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -52,12 +53,13 @@ fun CreditCard(
     modifier: Modifier = Modifier,
     height: Dp = 200.dp,
     isVisible: Boolean = false,
+    isExpanded: Boolean = false,
     onVisibilityToggle: () -> Unit = {}
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(height),
+            .height(if (isExpanded) 220.dp else height),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = cardData.backgroundColor)
     ) {
@@ -77,16 +79,65 @@ fun CreditCard(
                     color = Color.White
                 )
                 
-                Spacer(modifier = Modifier.weight(1f))
-                
-                // Card Details (only for expanded card)
-                if (cardData.isExpanded) {
-                    CardExpandedDetails(
-                        cardNumber = cardData.cardNumber,
-                        maskedNumber = cardData.maskedNumber,
-                        cardHolder = cardData.cardHolder,
-                        isVisible = isVisible,
-                        onVisibilityToggle = onVisibilityToggle
+                if (isExpanded) {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    
+                    // Balance
+                    Text(
+                        text = cardData.maskedNumber, // This is usually "$•••••"
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    
+                    Spacer(modifier = Modifier.height(12.dp))
+                    
+                    // Card Number
+                    Text(
+                        text = if (isVisible) cardData.cardNumber else "•••• •••• •••• ••••",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White,
+                        letterSpacing = 2.sp
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Show Button
+                    Surface(
+                        onClick = onVisibilityToggle,
+                        color = Color.White.copy(alpha = 0.2f),
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.height(32.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = if (isVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (isVisible) "Hide" else "Show",
+                                color = Color.White,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.weight(1f))
+                    
+                    // Card Holder
+                    Text(
+                        text = cardData.cardHolder,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White
                     )
                 }
             }
@@ -102,80 +153,40 @@ fun CreditCard(
 }
 
 /**
- * Expanded card details section with show/hide functionality
- */
-@Composable
-private fun CardExpandedDetails(
-    cardNumber: String,
-    maskedNumber: String,
-    cardHolder: String,
-    isVisible: Boolean,
-    onVisibilityToggle: () -> Unit
-) {
-    Column {
-        // Card Number
-        Text(
-            text = if (isVisible) cardNumber else maskedNumber,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.White,
-            letterSpacing = 2.sp
-        )
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        // Show/Hide Button and Card Holder
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedButton(
-                onClick = onVisibilityToggle,
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color.White.copy(alpha = 0.2f),
-                    contentColor = Color.White
-                ),
-                border = null,
-                shape = RoundedCornerShape(8.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                modifier = Modifier.height(32.dp)
-            ) {
-                Icon(
-                    imageVector = if (isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                    contentDescription = if (isVisible) "Hide" else "Show",
-                    modifier = Modifier.size(16.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = "Show", fontSize = 12.sp)
-            }
-            
-            Spacer(modifier = Modifier.width(16.dp))
-            
-            Text(
-                text = cardHolder,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.White
-            )
-        }
-    }
-}
-
-/**
  * Card Type Logo - Displays VISA or MASTERCARD badge
  */
 @Composable
 fun CardTypeLogo(cardType: CardType) {
-    Box(
-        modifier = Modifier
-            .size(48.dp, 32.dp)
-            .background(Color.White.copy(alpha = 0.3f), RoundedCornerShape(6.dp)),
-        contentAlignment = Alignment.Center
-    ) {
+    if (cardType == CardType.MASTERCARD) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 4.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .background(Color.White.copy(alpha = 0.8f), CircleShape)
+            )
+            Box(
+                modifier = Modifier
+                    .offset(x = (-10).dp)
+                    .size(24.dp)
+                    .background(Color.White.copy(alpha = 0.5f), CircleShape)
+            )
+            Text(
+                text = "mastercard",
+                color = Color.White,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.offset(x = (-4).dp)
+            )
+        }
+    } else {
         Text(
-            text = cardType.name,
-            fontSize = 12.sp,
+            text = "VISA",
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
+            fontStyle = FontStyle.Italic,
             color = Color.White
         )
     }
