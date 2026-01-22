@@ -5,22 +5,26 @@ import com.aryandi.paymentnfc.domain.repository.HomeRepository
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
-import io.kotest.core.spec.style.StringSpec
+import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.result.shouldBeSuccess
 import io.kotest.matchers.shouldBe
 
-class GetTransactionsUseCaseTest : StringSpec({
+class GetTransactionsUseCaseTest : BehaviorSpec({
     val repository = mock<HomeRepository>()
     val useCase = GetTransactionsUseCase(repository)
 
-    "invoke calls repository and returns result" {
-        val transactions = listOf(
-            Transaction("Test", "Date", "$ 10", "confirmed")
-        )
-        everySuspend { repository.getTransactions() } returns Result.success(transactions)
+    Given("a GetTransactionsUseCase") {
+        When("invoked") {
+            val transactions = listOf(
+                Transaction("Test", "Date", "$ 10", "confirmed")
+            )
+            everySuspend { repository.getTransactions() } returns Result.success(transactions)
 
-        val result = useCase()
+            val result = useCase()
 
-        result.shouldBeSuccess() shouldBe transactions
+            Then("it should return transactions from repository") {
+                result.shouldBeSuccess() shouldBe transactions
+            }
+        }
     }
 })

@@ -8,154 +8,173 @@ import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class OtpViewModelTest {
+class OtpViewModelTest : BehaviorSpec({
 
-    private val verifyOtpUseCase = mock<VerifyOtpUseCase>()
-    private val resendOtpUseCase = mock<ResendOtpUseCase>()
-    private val testDispatcher = StandardTestDispatcher()
+    val verifyOtpUseCase = mock<VerifyOtpUseCase>()
+    val resendOtpUseCase = mock<ResendOtpUseCase>()
+    val testDispatcher = StandardTestDispatcher()
 
-    @BeforeTest
-    fun setup() {
+    beforeTest {
         Dispatchers.setMain(testDispatcher)
     }
 
-    @AfterTest
-    fun tearDown() {
+    afterTest {
         Dispatchers.resetMain()
     }
 
-    @Test
-    fun `onIntent EmailChanged updates state`() = runTest {
-        val viewModel = OtpViewModel(verifyOtpUseCase, resendOtpUseCase)
-        val email = "test@example.com"
-        viewModel.onIntent(OtpIntent.EmailChanged(email))
-        assertEquals(email, viewModel.uiState.value.emailOrPhone)
-    }
+    Given("an OtpViewModel") {
+        When("onIntent EmailChanged is called") {
+            val viewModel = OtpViewModel(verifyOtpUseCase, resendOtpUseCase)
+            val email = "test@example.com"
+            viewModel.onIntent(OtpIntent.EmailChanged(email))
 
-    @Test
-    fun `onIntent OtpChanged updates state and clears error`() = runTest {
-        val viewModel = OtpViewModel(verifyOtpUseCase, resendOtpUseCase)
-        
-        // Setup error state
-        everySuspend { verifyOtpUseCase(any()) } returns Result.failure(Exception("Error"))
-        viewModel.onIntent(OtpIntent.Submit)
-        testDispatcher.scheduler.runCurrent()
-        assertTrue(viewModel.uiState.value.error != null)
+            Then("it should update the emailOrPhone in uiState") {
+                viewModel.uiState.value.emailOrPhone shouldBe email
+            }
+        }
 
-        // Change OTP
-        viewModel.onIntent(OtpIntent.OtpChanged("123456"))
-        
-        assertEquals("123456", viewModel.uiState.value.otp)
-        assertNull(viewModel.uiState.value.error)
-    }
-
-    @Test
-    fun `onIntent Submit successful verification updates state and emits event`() = runTest {
-        val user = User(1, "u", "e", "f", "l", "g", "i", "a", "r")
-        everySuspend { verifyOtpUseCase(any()) } returns Result.success(user)
-        val viewModel = OtpViewModel(verifyOtpUseCase, resendOtpUseCase)
-        viewModel.onIntent(OtpIntent.EmailChanged("test@example.com"))
-        viewModel.onIntent(OtpIntent.OtpChanged("123456"))
-
-        viewModel.events.test {
-            viewModel.onIntent(OtpIntent.Submit)
+        When("onIntent OtpChanged is called") {
+            val viewModel = OtpViewModel(verifyOtpUseCase, resendOtpUseCase)
             
-            val event = awaitItem()
-            assertTrue(event is OtpEvent.OtpSuccess)
-            assertEquals(user, event.user)
+            // Setup error state
+            everySuspend { verifyOtpUseCase(any()) } returns Result.failure(Exception("Error"))
+            runTest {
+                viewModel.onIntent(OtpIntent.Submit)
+                testDispatcher.scheduler.runCurrent()
+            }
+            (viewModel.uiState.value.error != null).shouldBeTrue()
 
-            val state = viewModel.uiState.value
-            assertFalse(state.isLoading)
-            assertTrue(state.isSuccess)
-            assertNull(state.error)
+            // Change OTP
+            viewModel.onIntent(OtpIntent.OtpChanged("123456"))
+
+            Then("it should update otp and clear the error in uiState") {
+                viewModel.uiState.value.otp shouldBe "123456"
+                viewModel.uiState.value.error.shouldBeNull()
+            }
+        }
+
+        When("onIntent Submit is called with successful verification") {
+            val user = User(1, "u", "e", "f", "l", "g", "i", "a", "r")
+            everySuspend { verifyOtpUseCase(any()) } returns Result.success(user)
+            val viewModel = OtpViewModel(verifyOtpUseCase, resendOtpUseCase)
+            viewModel.onIntent(OtpIntent.EmailChanged("test@example.com"))
+            viewModel.onIntent(OtpIntent.OtpChanged("123456"))
+
+            Then("it should update uiState and emit OtpSuccess event") {
+                runTest {
+                    viewModel.events.test {
+                        viewModel.onIntent(OtpIntent.Submit)
+                        
+                        val event = awaitItem()
+                        (event is OtpEvent.OtpSuccess).shouldBeTrue()
+                        (event as OtpEvent.OtpSuccess).user shouldBe user
+
+                        val state = viewModel.uiState.value
+                        state.isLoading.shouldBeFalse()
+                        state.isSuccess.shouldBeTrue()
+                        state.error.shouldBeNull()
+                    }
+                }
+            }
+        }
+
+        When("onIntent Submit is called with failed verification") {
+            val errorMessage = "Invalid OTP"
+            everySuspend { verifyOtpUseCase(any()) } returns Result.failure(Exception(errorMessage))
+            val viewModel = OtpViewModel(verifyOtpUseCase, resendOtpUseCase)
+            viewModel.onIntent(OtpIntent.EmailChanged("test@example.com"))
+            viewModel.onIntent(OtpIntent.OtpChanged("111111"))
+
+            Then("it should update uiState and emit OtpFailure event") {
+                runTest {
+                    viewModel.events.test {
+                        viewModel.onIntent(OtpIntent.Submit)
+                        
+                        val event = awaitItem()
+                        (event is OtpEvent.OtpFailure).shouldBeTrue()
+                        (event as OtpEvent.OtpFailure).message shouldBe errorMessage
+
+                        val state = viewModel.uiState.value
+                        state.isLoading.shouldBeFalse()
+                        state.isSuccess.shouldBeFalse()
+                        state.error shouldBe errorMessage
+                    }
+                }
+            }
+        }
+
+        When("onIntent ResendOtp is called successfully") {
+            everySuspend { resendOtpUseCase(any()) } returns Result.success(Unit)
+            val viewModel = OtpViewModel(verifyOtpUseCase, resendOtpUseCase)
+            viewModel.onIntent(OtpIntent.EmailChanged("test@example.com"))
+
+            Then("it should update uiState and emit ResendSuccess event") {
+                runTest {
+                    viewModel.events.test {
+                        viewModel.onIntent(OtpIntent.ResendOtp)
+                        
+                        val event = awaitItem()
+                        (event is OtpEvent.ResendSuccess).shouldBeTrue()
+                        (event as OtpEvent.ResendSuccess).message shouldBe "OTP has been resent"
+
+                        val state = viewModel.uiState.value
+                        state.isLoading.shouldBeFalse()
+                        state.error.shouldBeNull()
+                    }
+                }
+            }
+        }
+
+        When("onIntent ResendOtp fails") {
+            val errorMessage = "Failed to resend"
+            everySuspend { resendOtpUseCase(any()) } returns Result.failure(Exception(errorMessage))
+            val viewModel = OtpViewModel(verifyOtpUseCase, resendOtpUseCase)
+            viewModel.onIntent(OtpIntent.EmailChanged("test@example.com"))
+
+            Then("it should update uiState and emit OtpFailure event") {
+                runTest {
+                    viewModel.events.test {
+                        viewModel.onIntent(OtpIntent.ResendOtp)
+                        
+                        val event = awaitItem()
+                        (event is OtpEvent.OtpFailure).shouldBeTrue()
+                        (event as OtpEvent.OtpFailure).message shouldBe errorMessage
+
+                        val state = viewModel.uiState.value
+                        state.isLoading.shouldBeFalse()
+                        state.error shouldBe errorMessage
+                    }
+                }
+            }
+        }
+
+        When("onIntent ClearError is called") {
+            everySuspend { verifyOtpUseCase(any()) } returns Result.failure(Exception("Error"))
+            val viewModel = OtpViewModel(verifyOtpUseCase, resendOtpUseCase)
+            runTest {
+                viewModel.onIntent(OtpIntent.Submit)
+                testDispatcher.scheduler.runCurrent()
+            }
+            (viewModel.uiState.value.error != null).shouldBeTrue()
+
+            viewModel.onIntent(OtpIntent.ClearError)
+
+            Then("it should remove the error from uiState") {
+                viewModel.uiState.value.error.shouldBeNull()
+            }
         }
     }
-
-    @Test
-    fun `onIntent Submit failed verification updates state and emits error event`() = runTest {
-        val errorMessage = "Invalid OTP"
-        everySuspend { verifyOtpUseCase(any()) } returns Result.failure(Exception(errorMessage))
-        val viewModel = OtpViewModel(verifyOtpUseCase, resendOtpUseCase)
-        viewModel.onIntent(OtpIntent.EmailChanged("test@example.com"))
-        viewModel.onIntent(OtpIntent.OtpChanged("111111"))
-
-        viewModel.events.test {
-            viewModel.onIntent(OtpIntent.Submit)
-            
-            val event = awaitItem()
-            assertTrue(event is OtpEvent.OtpFailure)
-            assertEquals(errorMessage, event.message)
-
-            val state = viewModel.uiState.value
-            assertFalse(state.isLoading)
-            assertFalse(state.isSuccess)
-            assertEquals(errorMessage, state.error)
-        }
-    }
-
-    @Test
-    fun `onIntent ResendOtp successful updates state and emits event`() = runTest {
-        everySuspend { resendOtpUseCase(any()) } returns Result.success(Unit)
-        val viewModel = OtpViewModel(verifyOtpUseCase, resendOtpUseCase)
-        viewModel.onIntent(OtpIntent.EmailChanged("test@example.com"))
-
-        viewModel.events.test {
-            viewModel.onIntent(OtpIntent.ResendOtp)
-            
-            val event = awaitItem()
-            assertTrue(event is OtpEvent.ResendSuccess)
-            assertEquals("OTP has been resent", event.message)
-
-            val state = viewModel.uiState.value
-            assertFalse(state.isLoading)
-            assertNull(state.error)
-        }
-    }
-
-    @Test
-    fun `onIntent ResendOtp failure updates state and emits error event`() = runTest {
-        val errorMessage = "Failed to resend"
-        everySuspend { resendOtpUseCase(any()) } returns Result.failure(Exception(errorMessage))
-        val viewModel = OtpViewModel(verifyOtpUseCase, resendOtpUseCase)
-        viewModel.onIntent(OtpIntent.EmailChanged("test@example.com"))
-
-        viewModel.events.test {
-            viewModel.onIntent(OtpIntent.ResendOtp)
-            
-            val event = awaitItem()
-            assertTrue(event is OtpEvent.OtpFailure)
-            assertEquals(errorMessage, event.message)
-
-            val state = viewModel.uiState.value
-            assertFalse(state.isLoading)
-            assertEquals(errorMessage, state.error)
-        }
-    }
-
-    @Test
-    fun `onIntent ClearError removes error from state`() = runTest {
-        everySuspend { verifyOtpUseCase(any()) } returns Result.failure(Exception("Error"))
-        val viewModel = OtpViewModel(verifyOtpUseCase, resendOtpUseCase)
-        viewModel.onIntent(OtpIntent.Submit)
-        testDispatcher.scheduler.runCurrent()
-        assertTrue(viewModel.uiState.value.error != null)
-
-        viewModel.onIntent(OtpIntent.ClearError)
-        assertNull(viewModel.uiState.value.error)
-    }
-}
+})

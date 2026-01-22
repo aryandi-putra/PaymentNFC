@@ -7,128 +7,129 @@ import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.matcher.any
 import dev.mokkery.mock
+import io.kotest.core.spec.style.BehaviorSpec
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.nulls.shouldBeNull
+import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class LoginViewModelTest {
+class LoginViewModelTest : BehaviorSpec({
 
-    private val loginUseCase = mock<LoginUseCase>()
-    private val testDispatcher = StandardTestDispatcher()
+    val loginUseCase = mock<LoginUseCase>()
+    val testDispatcher = StandardTestDispatcher()
 
-    @BeforeTest
-    fun setup() {
+    beforeTest {
         Dispatchers.setMain(testDispatcher)
     }
 
-    @AfterTest
-    fun tearDown() {
+    afterTest {
         Dispatchers.resetMain()
     }
 
-    @Test
-    fun `onIntent UsernameChanged updates state`() = runTest {
-        val viewModel = LoginViewModel(loginUseCase)
-        viewModel.onIntent(LoginIntent.UsernameChanged("newuser"))
-        assertEquals("newuser", viewModel.uiState.value.username)
-    }
+    Given("a LoginViewModel") {
+        When("onIntent UsernameChanged is called") {
+            val viewModel = LoginViewModel(loginUseCase)
+            viewModel.onIntent(LoginIntent.UsernameChanged("newuser"))
 
-    @Test
-    fun `onIntent PasswordChanged updates state`() = runTest {
-        val viewModel = LoginViewModel(loginUseCase)
-        viewModel.onIntent(LoginIntent.PasswordChanged("newpass"))
-        assertEquals("newpass", viewModel.uiState.value.password)
-    }
+            Then("it should update the username in uiState") {
+                viewModel.uiState.value.username shouldBe "newuser"
+            }
+        }
 
-    @Test
-    fun `onIntent Submit successful login updates state and emits event`() = runTest {
-        // Arrange
-        val user = User(1, "u", "e", "f", "l", "g", "i", "a", "r")
-        everySuspend { loginUseCase(any()) } returns Result.success(user)
-        val viewModel = LoginViewModel(loginUseCase)
-        viewModel.onIntent(LoginIntent.UsernameChanged("user"))
-        viewModel.onIntent(LoginIntent.PasswordChanged("pass"))
+        When("onIntent PasswordChanged is called") {
+            val viewModel = LoginViewModel(loginUseCase)
+            viewModel.onIntent(LoginIntent.PasswordChanged("newpass"))
 
-        // Act & Assert
-        viewModel.events.test {
-            viewModel.onIntent(LoginIntent.Submit)
-            
-            val event = awaitItem()
-            assertTrue(event is LoginEvent.LoginSuccess)
-            assertEquals(user, event.user)
+            Then("it should update the password in uiState") {
+                viewModel.uiState.value.password shouldBe "newpass"
+            }
+        }
 
-            val state = viewModel.uiState.value
-            assertFalse(state.isLoading)
-            assertTrue(state.isSuccess)
-            assertEquals(user, state.user)
-            assertNull(state.error)
+        When("onIntent Submit is called with successful login") {
+            val user = User(1, "u", "e", "f", "l", "g", "i", "a", "r")
+            everySuspend { loginUseCase(any()) } returns Result.success(user)
+            val viewModel = LoginViewModel(loginUseCase)
+            viewModel.onIntent(LoginIntent.UsernameChanged("user"))
+            viewModel.onIntent(LoginIntent.PasswordChanged("pass"))
+
+            Then("it should update uiState and emit LoginSuccess event") {
+                runTest {
+                    viewModel.events.test {
+                        viewModel.onIntent(LoginIntent.Submit)
+                        
+                        val event = awaitItem()
+                        (event is LoginEvent.LoginSuccess).shouldBeTrue()
+                        (event as LoginEvent.LoginSuccess).user shouldBe user
+
+                        val state = viewModel.uiState.value
+                        state.isLoading.shouldBeFalse()
+                        state.isSuccess.shouldBeTrue()
+                        state.user shouldBe user
+                        state.error.shouldBeNull()
+                    }
+                }
+            }
+        }
+
+        When("onIntent Submit is called with failed login") {
+            val errorMessage = "Invalid credentials"
+            everySuspend { loginUseCase(any()) } returns Result.failure(Exception(errorMessage))
+            val viewModel = LoginViewModel(loginUseCase)
+            viewModel.onIntent(LoginIntent.UsernameChanged("user"))
+            viewModel.onIntent(LoginIntent.PasswordChanged("wrong"))
+
+            Then("it should update uiState and emit LoginFailure event") {
+                runTest {
+                    viewModel.events.test {
+                        viewModel.onIntent(LoginIntent.Submit)
+                        
+                        val event = awaitItem()
+                        (event is LoginEvent.LoginFailure).shouldBeTrue()
+                        (event as LoginEvent.LoginFailure).message shouldBe errorMessage
+
+                        val state = viewModel.uiState.value
+                        state.isLoading.shouldBeFalse()
+                        state.isSuccess.shouldBeFalse()
+                        state.error shouldBe errorMessage
+                    }
+                }
+            }
+        }
+
+        When("onIntent ClearError is called") {
+            everySuspend { loginUseCase(any()) } returns Result.failure(Exception("Error"))
+            val viewModel = LoginViewModel(loginUseCase)
+            runTest {
+                viewModel.onIntent(LoginIntent.Submit)
+                testDispatcher.scheduler.runCurrent()
+            }
+
+            viewModel.onIntent(LoginIntent.ClearError)
+
+            Then("it should remove the error from uiState") {
+                viewModel.uiState.value.error.shouldBeNull()
+            }
+        }
+
+        When("onIntent Reset is called") {
+            val viewModel = LoginViewModel(loginUseCase)
+            viewModel.onIntent(LoginIntent.UsernameChanged("user"))
+            viewModel.onIntent(LoginIntent.PasswordChanged("pass"))
+
+            viewModel.onIntent(LoginIntent.Reset)
+
+            Then("it should clear the uiState") {
+                val state = viewModel.uiState.value
+                state.username shouldBe ""
+                state.password shouldBe ""
+            }
         }
     }
-
-    @Test
-    fun `onIntent Submit failed login updates state and emits error event`() = runTest {
-        // Arrange
-        val errorMessage = "Invalid credentials"
-        everySuspend { loginUseCase(any()) } returns Result.failure(Exception(errorMessage))
-        val viewModel = LoginViewModel(loginUseCase)
-        viewModel.onIntent(LoginIntent.UsernameChanged("user"))
-        viewModel.onIntent(LoginIntent.PasswordChanged("wrong"))
-
-        // Act & Assert
-        viewModel.events.test {
-            viewModel.onIntent(LoginIntent.Submit)
-            
-            val event = awaitItem()
-            assertTrue(event is LoginEvent.LoginFailure)
-            assertEquals(errorMessage, event.message)
-
-            val state = viewModel.uiState.value
-            assertFalse(state.isLoading)
-            assertFalse(state.isSuccess)
-            assertEquals(errorMessage, state.error)
-        }
-    }
-
-    @Test
-    fun `onIntent ClearError removes error from state`() = runTest {
-        // Arrange
-        everySuspend { loginUseCase(any()) } returns Result.failure(Exception("Error"))
-        val viewModel = LoginViewModel(loginUseCase)
-        viewModel.onIntent(LoginIntent.Submit)
-        testDispatcher.scheduler.runCurrent()
-        assertTrue(viewModel.uiState.value.error != null)
-
-        // Act
-        viewModel.onIntent(LoginIntent.ClearError)
-
-        // Assert
-        assertNull(viewModel.uiState.value.error)
-    }
-
-    @Test
-    fun `onIntent Reset clears state`() = runTest {
-        // Arrange
-        val viewModel = LoginViewModel(loginUseCase)
-        viewModel.onIntent(LoginIntent.UsernameChanged("user"))
-        viewModel.onIntent(LoginIntent.PasswordChanged("pass"))
-
-        // Act
-        viewModel.onIntent(LoginIntent.Reset)
-
-        // Assert
-        val state = viewModel.uiState.value
-        assertEquals("", state.username)
-        assertEquals("", state.password)
-    }
-}
+})
