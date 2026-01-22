@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.aryandi.paymentnfc.features.cards.CardsScreen
 import com.aryandi.paymentnfc.features.home.HomeScreen
+import com.aryandi.paymentnfc.features.home.HomeV2Screen
 import com.aryandi.paymentnfc.features.landing.LandingPageScreen
 import com.aryandi.paymentnfc.features.login.SignInScreen
 import com.aryandi.paymentnfc.features.otp.OtpScreen
@@ -79,6 +80,13 @@ fun NavGraph(
 
         composable<Screen.Home> { backStackEntry ->
             val home = backStackEntry.toRoute<Screen.Home>()
+            HomeV2Screen(
+                onNavigateToCards = {
+                    navController.navigate(Screen.Cards)
+                }
+            )
+            /* 
+            // Previous Home V1 Implementation
             HomeScreen(
                 userId = home.userId,
                 onBack = {
@@ -90,6 +98,7 @@ fun NavGraph(
                     navController.navigate(Screen.Cards)
                 }
             )
+            */
         }
         
         composable<Screen.Cards> {
@@ -99,6 +108,9 @@ fun NavGraph(
                 },
                 onEdit = {
                     // Handle edit action
+                },
+                onNavigateToHome = {
+                    navController.navigate(Screen.Home(userId = "test"))
                 }
             )
         }

@@ -84,7 +84,7 @@ fun HomeScreen(
         bottomBar = { 
             AppBottomNavBar(
                 selectedTab = BottomNavTab.HOME,
-                onAiClick = onNavigateToCards
+                onCardsClick = onNavigateToCards
             ) 
         }
     ) { paddingValues ->

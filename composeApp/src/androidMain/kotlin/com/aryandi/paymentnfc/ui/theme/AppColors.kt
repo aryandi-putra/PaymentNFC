@@ -35,6 +35,12 @@ object AppColors {
     val CardOrange = Color(0xFFFF9F6E)
     val CardYellow = Color(0xFFFFD068)
     val CardPurple = Color(0xFF8FA4FF)
+    val CardRed = Color(0xFFE74C3C)
+    val CardDarkGreen = Color(0xFF27AE60)
+    val CardBrown = Color(0xFFD35400)
+    val CardBlue = Color(0xFF3498DB)
+    val CardNavy = Color(0xFF2C3E50)
+    val CardOlive = Color(0xFFA59D0E)
     val CardGradientStart = Color(0xFFB4C1FF)
     val CardGradientEnd = Color(0xFFE5D9FF)
     

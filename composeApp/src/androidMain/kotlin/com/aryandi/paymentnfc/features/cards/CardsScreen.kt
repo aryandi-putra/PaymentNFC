@@ -23,6 +23,7 @@ import com.aryandi.paymentnfc.ui.components.CardData
 import com.aryandi.paymentnfc.ui.components.CardType
 import com.aryandi.paymentnfc.ui.components.CreditCard
 import com.aryandi.paymentnfc.ui.components.SectionHeader
+import com.aryandi.paymentnfc.ui.components.StackedCardList
 import com.aryandi.paymentnfc.ui.theme.AppColors
 
 /**
@@ -32,11 +33,12 @@ import com.aryandi.paymentnfc.ui.theme.AppColors
 @Composable
 fun CardsScreen(
     onBack: () -> Unit = {},
-    onEdit: () -> Unit = {}
-) {
+    onEdit: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
+    ) {
     var isCardNumberVisible by remember { mutableStateOf(false) }
     
-    val cards = remember {
+    val debitCreditCards = remember {
         listOf(
             CardData(
                 bankName = "NiceBank",
@@ -57,10 +59,74 @@ fun CardsScreen(
                 isExpanded = false
             ),
             CardData(
+                bankName = "WeBank",
+                cardType = CardType.VISA,
+                backgroundColor = AppColors.CardOlive,
+                isExpanded = false
+            ),
+            CardData(
                 bankName = "TrustBank",
                 cardType = CardType.VISA,
                 backgroundColor = AppColors.CardPurple,
                 cardNumber = "**** **** **** 1234",
+                maskedNumber = "$•••••",
+                cardHolder = "Alexander Parra",
+                isExpanded = true
+            )
+        )
+    }
+
+    val memberCards = remember {
+        listOf(
+            CardData(
+                bankName = "Alfagift",
+                cardType = CardType.MASTERCARD, // Placeholder for gift icon
+                backgroundColor = AppColors.CardBrown,
+                isExpanded = false
+            ),
+            CardData(
+                bankName = "IKEA",
+                cardType = CardType.VISA, // Placeholder for IKEA logo
+                backgroundColor = AppColors.CardYellow,
+                isExpanded = false
+            ),
+            CardData(
+                bankName = "MAP",
+                cardType = CardType.MASTERCARD, // Placeholder for MAP logo
+                backgroundColor = AppColors.CardRed,
+                isExpanded = false
+            ),
+            CardData(
+                bankName = "Starbucks",
+                cardType = CardType.VISA, // Placeholder for Starbucks logo
+                backgroundColor = AppColors.CardDarkGreen,
+                cardNumber = "**** **** **** 5678",
+                maskedNumber = "$•••••",
+                cardHolder = "Alexander Parra",
+                isExpanded = true
+            )
+        )
+    }
+
+    val electronicMoneyCards = remember {
+        listOf(
+            CardData(
+                bankName = "BNI Tapcash",
+                cardType = CardType.MASTERCARD, // Placeholder for Tapcash logo
+                backgroundColor = AppColors.CardOrange,
+                isExpanded = false
+            ),
+            CardData(
+                bankName = "Mandiri E-Money",
+                cardType = CardType.VISA, // Placeholder for e-money logo
+                backgroundColor = AppColors.CardNavy,
+                isExpanded = false
+            ),
+            CardData(
+                bankName = "Flazz BCA",
+                cardType = CardType.MASTERCARD, // Placeholder for Flazz logo
+                backgroundColor = AppColors.CardBlue,
+                cardNumber = "**** **** **** 9012",
                 maskedNumber = "$•••••",
                 cardHolder = "Alexander Parra",
                 isExpanded = true
@@ -96,7 +162,10 @@ fun CardsScreen(
                 )
             )
         },
-        bottomBar = { AppBottomNavBar(selectedTab = BottomNavTab.CARDS) }
+        bottomBar = { AppBottomNavBar(
+            selectedTab = BottomNavTab.CARDS,
+            onHomeClick = onNavigateToHome
+        ) }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -146,23 +215,13 @@ fun CardsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
             
-            // Stacked Cards
+            // Stacked Cards - Debit/Credit
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(340.dp)
-                ) {
-                    cards.forEachIndexed { index, card ->
-                        val offsetY = (index * 50).dp
-                        CreditCard(
-                            cardData = card,
-                            modifier = Modifier.offset(y = offsetY),
-                            isVisible = isCardNumberVisible,
-                            onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible }
-                        )
-                    }
-                }
+                StackedCardList(
+                    cards = debitCreditCards,
+                    isCardNumberVisible = isCardNumberVisible,
+                    onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible }
+                )
                 Spacer(modifier = Modifier.height(24.dp))
             }
             
@@ -172,6 +231,36 @@ fun CardsScreen(
                     title = "Member Card", 
                     actionText = "Add Card",
                     onActionClick = { }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // Stacked Cards - Member Cards
+            item {
+                StackedCardList(
+                    cards = memberCards,
+                    isCardNumberVisible = isCardNumberVisible,
+                    onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible }
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            // Electronic Money Card Section
+            item {
+                SectionHeader(
+                    title = "Electronic Money Card", 
+                    actionText = "Add Card",
+                    onActionClick = { }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // Stacked Cards - Electronic Money
+            item {
+                StackedCardList(
+                    cards = electronicMoneyCards,
+                    isCardNumberVisible = isCardNumberVisible,
+                    onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible }
                 )
                 Spacer(modifier = Modifier.height(80.dp))
             }
