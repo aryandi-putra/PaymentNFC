@@ -17,16 +17,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-// Colors
-val PrimaryBlue = Color(0xFF2E7DED)
-val BackgroundWhite = Color(0xFFFFFFFF)
-val BackgroundGray = Color(0xFFF5F7FA)
-val CardGreen = Color(0xFF66D4A8)
-val CardOrange = Color(0xFFFF9F6E)
-val CardYellow = Color(0xFFFFD068)
-val CardPurple = Color(0xFF8FA4FF)
-val TextGray = Color(0xFF8E8E93)
+import com.aryandi.paymentnfc.ui.components.AppBottomNavBar
+import com.aryandi.paymentnfc.ui.components.BottomNavTab
+import com.aryandi.paymentnfc.ui.components.CardData
+import com.aryandi.paymentnfc.ui.components.CardType
+import com.aryandi.paymentnfc.ui.components.CreditCard
+import com.aryandi.paymentnfc.ui.components.SectionHeader
+import com.aryandi.paymentnfc.ui.theme.AppColors
 
 /**
  * Cards Screen - Beautiful implementation based on design
@@ -44,25 +41,25 @@ fun CardsScreen(
             CardData(
                 bankName = "NiceBank",
                 cardType = CardType.MASTERCARD,
-                backgroundColor = CardGreen,
+                backgroundColor = AppColors.CardGreen,
                 isExpanded = false
             ),
             CardData(
                 bankName = "AriaBank",
                 cardType = CardType.VISA,
-                backgroundColor = CardOrange,
+                backgroundColor = AppColors.CardOrange,
                 isExpanded = false
             ),
             CardData(
                 bankName = "AriaBank",
                 cardType = CardType.MASTERCARD,
-                backgroundColor = CardYellow,
+                backgroundColor = AppColors.CardYellow,
                 isExpanded = false
             ),
             CardData(
                 bankName = "TrustBank",
                 cardType = CardType.VISA,
-                backgroundColor = CardPurple,
+                backgroundColor = AppColors.CardPurple,
                 cardNumber = "**** **** **** 1234",
                 maskedNumber = "$•••••",
                 cardHolder = "Alexander Parra",
@@ -88,23 +85,23 @@ fun CardsScreen(
                     TextButton(onClick = onEdit) {
                         Text(
                             text = "Edit",
-                            color = PrimaryBlue,
+                            color = AppColors.PrimaryBlue,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = BackgroundWhite
+                    containerColor = AppColors.BackgroundWhite
                 )
             )
         },
-        bottomBar = { BottomNavBar() }
+        bottomBar = { AppBottomNavBar(selectedTab = BottomNavTab.CARDS) }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(BackgroundWhite)
+                .background(AppColors.BackgroundWhite)
                 .padding(paddingValues)
                 .padding(horizontal = 20.dp)
         ) {
@@ -141,7 +138,11 @@ fun CardsScreen(
             
             // Debit/Credit Card Section
             item {
-                SectionHeader(title = "Debit/Credit Card", actionText = "Add Card")
+                SectionHeader(
+                    title = "Debit/Credit Card", 
+                    actionText = "Add Card",
+                    onActionClick = { }
+                )
                 Spacer(modifier = Modifier.height(16.dp))
             }
             
@@ -167,7 +168,11 @@ fun CardsScreen(
             
             // Member Card Section
             item {
-                SectionHeader(title = "Member Card", actionText = "Add Card")
+                SectionHeader(
+                    title = "Member Card", 
+                    actionText = "Add Card",
+                    onActionClick = { }
+                )
                 Spacer(modifier = Modifier.height(80.dp))
             }
         }
@@ -185,7 +190,7 @@ fun ActionCard(
         modifier = modifier
             .height(120.dp)
             .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = BackgroundGray),
+        colors = CardDefaults.cardColors(containerColor = AppColors.BackgroundGray),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
@@ -198,7 +203,7 @@ fun ActionCard(
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = PrimaryBlue,
+                tint = AppColors.PrimaryBlue,
                 modifier = Modifier.size(48.dp)
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -212,203 +217,7 @@ fun ActionCard(
     }
 }
 
-@Composable
-fun SectionHeader(title: String, actionText: String, onActionClick: () -> Unit = {}) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = title,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color.Black
-        )
-        TextButton(onClick = onActionClick) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null,
-                tint = PrimaryBlue,
-                modifier = Modifier.size(16.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = actionText,
-                color = PrimaryBlue,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
-    }
-}
-
-@Composable
-fun CreditCard(
-    cardData: CardData,
-    modifier: Modifier = Modifier,
-    isVisible: Boolean = false,
-    onVisibilityToggle: () -> Unit = {}
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(200.dp),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = cardData.backgroundColor)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                // Bank Name
-                Text(
-                    text = cardData.bankName,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-                
-                Spacer(modifier = Modifier.weight(1f))
-                
-                // Card Details (only for expanded card)
-                if (cardData.isExpanded) {
-                    Column {
-                        // Card Number
-                        Text(
-                            text = if (isVisible) cardData.cardNumber else cardData.maskedNumber,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = Color.White,
-                            letterSpacing = 2.sp
-                        )
-                        
-                        Spacer(modifier = Modifier.height(8.dp))
-                        
-                        // Show/Hide Button and Card Holder
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            OutlinedButton(
-                                onClick = onVisibilityToggle,
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    containerColor = Color.White.copy(alpha = 0.2f),
-                                    contentColor = Color.White
-                                ),
-                                border = null,
-                                shape = RoundedCornerShape(8.dp),
-                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                                modifier = Modifier.height(32.dp)
-                            ) {
-                                Icon(
-                                    imageVector = if (isVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = "Show", fontSize = 12.sp)
-                            }
-                            
-                            Spacer(modifier = Modifier.width(16.dp))
-                            
-                            Text(
-                                text = cardData.cardHolder,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Color.White
-                            )
-                        }
-                    }
-                }
-            }
-            
-            // Card Type Logo
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-            ) {
-                CardTypeLogo(cardData.cardType)
-            }
-        }
-    }
-}
-
-@Composable
-fun CardTypeLogo(cardType: CardType) {
-    Box(
-        modifier = Modifier
-            .size(48.dp, 32.dp)
-            .background(Color.White.copy(alpha = 0.3f), RoundedCornerShape(6.dp)),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = cardType.name,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-    }
-}
-
-@Composable
-fun BottomNavBar() {
-    NavigationBar(
-        containerColor = BackgroundWhite,
-        tonalElevation = 8.dp
-    ) {
-        NavigationBarItem(
-            selected = false,
-            onClick = { },
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home") }
-        )
-        NavigationBarItem(
-            selected = true,
-            onClick = { },
-            icon = { Icon(Icons.Default.CreditCard, contentDescription = "Cards") },
-            label = { Text("Cards") },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = PrimaryBlue,
-                selectedTextColor = PrimaryBlue
-            )
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = { },
-            icon = { Icon(Icons.Default.SmartToy, contentDescription = "AI") },
-            label = { Text("AI") }
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = { },
-            icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-            label = { Text("Profile") }
-        )
-    }
-}
-
-// Data Models
-data class CardData(
-    val bankName: String,
-    val cardType: CardType,
-    val backgroundColor: Color,
-    val cardNumber: String = "**** **** **** ****",
-    val maskedNumber: String = "$•••••",
-    val cardHolder: String = "",
-    val isExpanded: Boolean = false
-)
-
-enum class CardType {
-    VISA,
-    MASTERCARD
-}
-
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun CardsScreenPreview() {
     CardsScreen()
