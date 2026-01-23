@@ -8,9 +8,6 @@ import com.aryandi.paymentnfc.domain.usecase.LoginUseCase
 import com.aryandi.paymentnfc.domain.usecase.RegisterUseCase
 import com.aryandi.paymentnfc.domain.usecase.ResendOtpUseCase
 import com.aryandi.paymentnfc.domain.usecase.VerifyOtpUseCase
-import com.aryandi.paymentnfc.presentation.viewmodel.LoginViewModel
-import com.aryandi.paymentnfc.presentation.viewmodel.OtpViewModel
-import com.aryandi.paymentnfc.presentation.viewmodel.RegisterViewModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -26,9 +23,4 @@ val authModule = module {
     factoryOf(::RegisterUseCase)
     factoryOf(::VerifyOtpUseCase)
     factoryOf(::ResendOtpUseCase)
-    
-    // ViewModels
-    factoryOf(::LoginViewModel)
-    factoryOf(::RegisterViewModel)
-    factoryOf(::OtpViewModel)
 }

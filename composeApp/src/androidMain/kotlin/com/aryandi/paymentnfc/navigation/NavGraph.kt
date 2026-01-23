@@ -9,7 +9,6 @@ import com.aryandi.paymentnfc.features.addcard.AddCardTypeScreen
 import com.aryandi.paymentnfc.features.addcard.AddDebitCreditCardScreen
 import com.aryandi.paymentnfc.features.cards.CardDetailScreen
 import com.aryandi.paymentnfc.features.cards.CardsScreen
-import com.aryandi.paymentnfc.features.home.HomeScreen
 import com.aryandi.paymentnfc.features.home.HomeV2Screen
 import com.aryandi.paymentnfc.features.landing.LandingPageScreen
 import com.aryandi.paymentnfc.features.login.SignInScreen

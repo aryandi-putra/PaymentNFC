@@ -6,14 +6,13 @@ import com.aryandi.paymentnfc.config.AppConfig
 import com.aryandi.paymentnfc.config.ConfigHolder
 import com.aryandi.paymentnfc.config.Environment
 import com.aryandi.paymentnfc.config.kermitMinSeverity
-import com.aryandi.paymentnfc.di.NetworkConfig
 import com.aryandi.paymentnfc.di.initKoin
+import com.aryandi.paymentnfc.di.viewModelModule
 import com.aryandi.paymentnfc.logging.CrashHandler
 import com.aryandi.paymentnfc.logging.KermitLogger
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.logger.Level
-import org.koin.dsl.module
 
 class PaymentNFCApplication : Application() {
     
@@ -35,12 +34,8 @@ class PaymentNFCApplication : Application() {
             androidLogger(Level.ERROR) // Log only errors in production
             androidContext(this@PaymentNFCApplication)
 
-            // Platform overrides
-//            modules(
-//                module {
-//                    single { NetworkConfig(enableNetworkLogs = ConfigHolder.config.enableNetworkLogging) }
-//                }
-//            )
+            // Add Android-specific ViewModel module
+            modules(viewModelModule)
         }
         
         // Set up crash handler to log uncaught exceptions

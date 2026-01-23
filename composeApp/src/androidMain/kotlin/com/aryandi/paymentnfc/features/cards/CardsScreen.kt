@@ -21,7 +21,6 @@ import com.aryandi.paymentnfc.ui.components.AppBottomNavBar
 import com.aryandi.paymentnfc.ui.components.BottomNavTab
 import com.aryandi.paymentnfc.ui.components.CardData
 import com.aryandi.paymentnfc.ui.components.CardType
-import com.aryandi.paymentnfc.ui.components.CreditCard
 import com.aryandi.paymentnfc.ui.components.SectionHeader
 import com.aryandi.paymentnfc.ui.components.StackedCardList
 import com.aryandi.paymentnfc.ui.theme.AppColors

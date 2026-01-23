@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
@@ -14,61 +13,37 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aryandi.paymentnfc.presentation.viewmodel.HomeV2ViewModel
 import com.aryandi.paymentnfc.ui.components.*
+import com.aryandi.paymentnfc.ui.mapper.CardMapper
 import com.aryandi.paymentnfc.ui.theme.AppColors
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeV2Screen(
     onNavigateToCards: () -> Unit = {},
-    onNavigateToCardDetail: () -> Unit = {}
+    onNavigateToCardDetail: () -> Unit = {},
+    viewModel: HomeV2ViewModel = koinViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState(pageCount = { 3 })
     
-    // Sample Data
-    val retailCards = remember {
-        listOf(
-            CardData("AriaBank", CardType.VISA, AppColors.CardOrange),
-            CardData("AriaBank", CardType.MASTERCARD, AppColors.CardYellow),
-            CardData(
-                bankName = "WeBank", 
-                cardType = CardType.VISA, 
-                backgroundColor = AppColors.CardOlive, 
-                cardHolder = "Alexander Parra", 
-                isExpanded = true
-            )
-        )
+    // Map domain cards to UI cards
+    val retailCards = remember(uiState.retailCards) {
+        CardMapper.toCardDataList(uiState.retailCards)
     }
     
-    val memberCards = remember {
-        listOf(
-            CardData("Alfagift", CardType.MASTERCARD, AppColors.CardBrown),
-            CardData("IKEA", CardType.VISA, AppColors.CardYellow),
-            CardData(
-                bankName = "Starbucks", 
-                cardType = CardType.VISA, 
-                backgroundColor = AppColors.CardDarkGreen, 
-                cardHolder = "Alexander Parra", 
-                isExpanded = true
-            )
-        )
+    val memberCards = remember(uiState.memberCards) {
+        CardMapper.toCardDataList(uiState.memberCards)
     }
     
-    val eMoneyCards = remember {
-        listOf(
-            CardData("BNI Tapcash", CardType.MASTERCARD, AppColors.CardOrange),
-            CardData("Mandiri E-Money", CardType.VISA, AppColors.CardNavy),
-            CardData(
-                bankName = "Flazz BCA", 
-                cardType = CardType.MASTERCARD, 
-                backgroundColor = AppColors.CardBlue, 
-                cardHolder = "Alexander Parra", 
-                isExpanded = true
-            )
-        )
+    val eMoneyCards = remember(uiState.eMoneyCards) {
+        CardMapper.toCardDataList(uiState.eMoneyCards)
     }
 
     Scaffold(
@@ -216,16 +191,19 @@ fun SectionHeaderWithViewAll(
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview
+@Preview
 @Composable
 fun HomeV2ScreenPreview() {
+    // Note: Preview won't show data as ViewModel requires Koin DI
+    // Run the app to see actual data
     HomeV2Screen()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@androidx.compose.ui.tooling.preview.Preview
+@Preview
 @Composable
 fun HomeV2ScreenEmptyPreview() {
+    // Static preview showing empty state
     val pagerState = rememberPagerState(pageCount = { 3 })
     
     Scaffold(
