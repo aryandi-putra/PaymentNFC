@@ -40,13 +40,12 @@ fun AddDebitCreditCardScreen(
     viewModel: AddCardViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var expanded by remember { mutableStateOf(false) }
+    var categoryExpanded by remember { mutableStateOf(false) }
+    var cardTypeExpanded by remember { mutableStateOf(false) }
     
-    val categories = listOf(
-        "Visa",
-        "Mastercard",
-        "American Express",
-        "JCB"
+    val cardTypes = listOf(
+        CardTypeModel.VISA to "Visa",
+        CardTypeModel.MASTERCARD to "Mastercard"
     )
     
     LaunchedEffect(viewModel) {
@@ -130,7 +129,7 @@ fun AddDebitCreditCardScreen(
             
             Spacer(modifier = Modifier.height(32.dp))
             
-            // Category Dropdown
+            // Category Dropdown (from database)
             Text(
                 text = "Choose category",
                 fontSize = 12.sp,
@@ -139,19 +138,74 @@ fun AddDebitCreditCardScreen(
             )
             
             ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
+                expanded = categoryExpanded,
+                onExpandedChange = { categoryExpanded = !categoryExpanded }
             ) {
                 OutlinedTextField(
-                    value = uiState.cardType.name,
+                    value = uiState.selectedCategory?.displayName ?: "",
                     onValueChange = {},
                     readOnly = true,
                     placeholder = {
                         Text(
-                            text = "Choose category",
+                            text = if (uiState.isCategoriesLoading) "Loading..." else "Choose category",
                             color = AppColors.TextGray
                         )
                     },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Dropdown",
+                            tint = AppColors.TextGray
+                        )
+                    },
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = AppColors.TextGray.copy(alpha = 0.3f),
+                        focusedBorderColor = AppColors.PrimaryBlue
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !uiState.isCategoriesLoading
+                )
+                
+                ExposedDropdownMenu(
+                    expanded = categoryExpanded,
+                    onDismissRequest = { categoryExpanded = false }
+                ) {
+                    uiState.categories.forEach { category ->
+                        DropdownMenuItem(
+                            text = { Text(category.displayName) },
+                            onClick = {
+                                viewModel.onIntent(AddCardIntent.CategorySelected(category))
+                                categoryExpanded = false
+                            }
+                        )
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Card Type Dropdown
+            Text(
+                text = "Card type",
+                fontSize = 12.sp,
+                color = AppColors.TextGray,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            
+            ExposedDropdownMenuBox(
+                expanded = cardTypeExpanded,
+                onExpandedChange = { cardTypeExpanded = !cardTypeExpanded }
+            ) {
+                OutlinedTextField(
+                    value = when (uiState.cardType) {
+                        CardTypeModel.VISA -> "Visa"
+                        CardTypeModel.MASTERCARD -> "Mastercard"
+                    },
+                    onValueChange = {},
+                    readOnly = true,
                     trailingIcon = {
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
@@ -170,20 +224,15 @@ fun AddDebitCreditCardScreen(
                 )
                 
                 ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                    expanded = cardTypeExpanded,
+                    onDismissRequest = { cardTypeExpanded = false }
                 ) {
-                    categories.forEach { category ->
+                    cardTypes.forEach { (type, name) ->
                         DropdownMenuItem(
-                            text = { Text(category) },
+                            text = { Text(name) },
                             onClick = {
-                                val type = when(category) {
-                                    "Visa" -> CardTypeModel.VISA
-                                    "Mastercard" -> CardTypeModel.MASTERCARD
-                                    else -> CardTypeModel.VISA
-                                }
                                 viewModel.onIntent(AddCardIntent.CardTypeChanged(type))
-                                expanded = false
+                                cardTypeExpanded = false
                             }
                         )
                     }

@@ -38,14 +38,7 @@ fun AddOthersCardScreen(
     viewModel: AddCardViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var expanded by remember { mutableStateOf(false) }
-    
-    val categories = listOf(
-        "Member Card",
-        "Electronic Money",
-        "Gift Card",
-        "Other"
-    )
+    var categoryExpanded by remember { mutableStateOf(false) }
     
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
@@ -127,29 +120,25 @@ fun AddOthersCardScreen(
             
             Spacer(modifier = Modifier.height(32.dp))
             
-            // Category Dropdown
+            // Category Dropdown (from database)
             Text(
-                text = "Debit/Credit Card", // Label from design, seems to be category selection
+                text = "Choose category",
                 fontSize = 12.sp,
                 color = AppColors.TextGray,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             
-            // Category selection would typically be passed from navigation or pre-selected
-            // For now, show card type selection instead
-            var selectedCategory by remember { mutableStateOf(categories.first()) }
-            
             ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded }
+                expanded = categoryExpanded,
+                onExpandedChange = { categoryExpanded = !categoryExpanded }
             ) {
                 OutlinedTextField(
-                    value = selectedCategory,
+                    value = uiState.selectedCategory?.displayName ?: "",
                     onValueChange = {},
                     readOnly = true,
                     placeholder = {
                         Text(
-                            text = "Choose category",
+                            text = if (uiState.isCategoriesLoading) "Loading..." else "Choose category",
                             color = AppColors.TextGray
                         )
                     },
@@ -167,19 +156,20 @@ fun AddOthersCardScreen(
                         unfocusedBorderColor = AppColors.TextGray.copy(alpha = 0.3f),
                         focusedBorderColor = AppColors.PrimaryBlue
                     ),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = !uiState.isCategoriesLoading
                 )
                 
                 ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                    expanded = categoryExpanded,
+                    onDismissRequest = { categoryExpanded = false }
                 ) {
-                    categories.forEach { category ->
+                    uiState.categories.forEach { category ->
                         DropdownMenuItem(
-                            text = { Text(category) },
+                            text = { Text(category.displayName) },
                             onClick = {
-                                selectedCategory = category
-                                expanded = false
+                                viewModel.onIntent(AddCardIntent.CategorySelected(category))
+                                categoryExpanded = false
                             }
                         )
                     }
