@@ -1,7 +1,7 @@
 package com.aryandi.paymentnfc.domain.repository
 
 import com.aryandi.paymentnfc.domain.model.Card
-import com.aryandi.paymentnfc.domain.model.CardCategory
+import com.aryandi.paymentnfc.domain.model.Category
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -16,14 +16,14 @@ interface CardRepository {
     fun getAllCards(): Flow<List<Card>>
     
     /**
-     * Get cards grouped by category
+     * Get cards grouped by category (dynamic categories from database)
      */
-    fun getCardsGroupedByCategory(): Flow<Map<CardCategory, List<Card>>>
+    fun getCardsGroupedByCategory(categories: List<Category>): Flow<Map<String, List<Card>>>
     
     /**
-     * Get cards by category
+     * Get cards by categoryId
      */
-    fun getCardsByCategory(category: CardCategory): Flow<List<Card>>
+    fun getCardsByCategoryId(categoryId: String): Flow<List<Card>>
     
     /**
      * Get a single card by ID
@@ -48,15 +48,10 @@ interface CardRepository {
     /**
      * Delete all cards in a category
      */
-    suspend fun deleteCardsByCategory(category: CardCategory)
+    suspend fun deleteCardsByCategoryId(categoryId: String)
     
     /**
      * Delete all cards
      */
     suspend fun deleteAllCards()
-    
-    /**
-     * Seed initial data (if database is empty)
-     */
-    suspend fun seedInitialDataIfNeeded()
 }

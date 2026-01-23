@@ -29,6 +29,7 @@ object AppColors {
     val ConfirmedBg = Color(0xFFE7F9EF)
     val ConfirmedText = Color(0xFF2ECC71)
     val ErrorRed = Color(0xFFD32F2F)
+    val SuccessGreen = Color(0xFF2ECC71)
     
     // Card Colors
     val CardGreen = Color(0xFF66D4A8)

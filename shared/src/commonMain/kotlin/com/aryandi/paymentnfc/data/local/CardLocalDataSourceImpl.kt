@@ -22,8 +22,8 @@ class CardLocalDataSourceImpl(
         return queries.selectAll().asFlow().mapToList(Dispatchers.IO)
     }
     
-    override fun getCardsByCategory(category: String): Flow<List<CardEntity>> {
-        return queries.selectByCategory(category).asFlow().mapToList(Dispatchers.IO)
+    override fun getCardsByCategoryId(categoryId: String): Flow<List<CardEntity>> {
+        return queries.selectByCategoryId(categoryId).asFlow().mapToList(Dispatchers.IO)
     }
     
     override suspend fun getCardById(id: String): CardEntity? = withContext(Dispatchers.IO) {
@@ -38,7 +38,7 @@ class CardLocalDataSourceImpl(
             cardNumber = card.cardNumber,
             maskedNumber = card.maskedNumber,
             cardHolder = card.cardHolder,
-            category = card.category,
+            categoryId = card.categoryId,
             colorHex = card.colorHex
         )
     }
@@ -47,15 +47,15 @@ class CardLocalDataSourceImpl(
         queries.deleteById(id)
     }
     
-    override suspend fun deleteCardsByCategory(category: String) = withContext(Dispatchers.IO) {
-        queries.deleteByCategory(category)
+    override suspend fun deleteCardsByCategoryId(categoryId: String) = withContext(Dispatchers.IO) {
+        queries.deleteByCategoryId(categoryId)
     }
     
     override suspend fun deleteAllCards() = withContext(Dispatchers.IO) {
         queries.deleteAll()
     }
     
-    override suspend fun countByCategory(category: String): Long = withContext(Dispatchers.IO) {
-        queries.countByCategory(category).executeAsOne()
+    override suspend fun countByCategoryId(categoryId: String): Long = withContext(Dispatchers.IO) {
+        queries.countByCategoryId(categoryId).executeAsOne()
     }
 }

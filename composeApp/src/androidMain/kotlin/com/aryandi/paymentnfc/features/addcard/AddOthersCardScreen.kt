@@ -135,12 +135,16 @@ fun AddOthersCardScreen(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             
+            // Category selection would typically be passed from navigation or pre-selected
+            // For now, show card type selection instead
+            var selectedCategory by remember { mutableStateOf(categories.first()) }
+            
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = { expanded = !expanded }
             ) {
                 OutlinedTextField(
-                    value = uiState.category.ifBlank { "Select Category" },
+                    value = selectedCategory,
                     onValueChange = {},
                     readOnly = true,
                     placeholder = {
@@ -174,7 +178,7 @@ fun AddOthersCardScreen(
                         DropdownMenuItem(
                             text = { Text(category) },
                             onClick = {
-                                viewModel.onIntent(AddCardIntent.CategoryChanged(category))
+                                selectedCategory = category
                                 expanded = false
                             }
                         )

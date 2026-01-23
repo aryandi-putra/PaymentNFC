@@ -3,11 +3,12 @@ package com.aryandi.paymentnfc.data.repository
 import com.aryandi.paymentnfc.data.local.CardLocalDataSource
 import com.aryandi.paymentnfc.database.CardEntity
 import com.aryandi.paymentnfc.domain.model.Card
-import com.aryandi.paymentnfc.domain.model.CardCategory
 import com.aryandi.paymentnfc.domain.model.CardTypeModel
+import com.aryandi.paymentnfc.domain.model.Category
 import com.aryandi.paymentnfc.domain.repository.CardRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 /**
@@ -23,22 +24,26 @@ class CardRepositoryImpl(
         }
     }
     
-    override fun getCardsGroupedByCategory(): Flow<Map<CardCategory, List<Card>>> {
-        return combine(
-            localDataSource.getCardsByCategory(CardCategory.RETAIL_SHOPPING.name),
-            localDataSource.getCardsByCategory(CardCategory.MEMBER_CARD.name),
-            localDataSource.getCardsByCategory(CardCategory.ELECTRONIC_MONEY.name)
-        ) { retail, member, eMoney ->
-            mapOf(
-                CardCategory.RETAIL_SHOPPING to retail.map { it.toDomainModel() },
-                CardCategory.MEMBER_CARD to member.map { it.toDomainModel() },
-                CardCategory.ELECTRONIC_MONEY to eMoney.map { it.toDomainModel() }
-            )
+    override fun getCardsGroupedByCategory(categories: List<Category>): Flow<Map<String, List<Card>>> {
+        if (categories.isEmpty()) {
+            return flowOf(emptyMap())
+        }
+        
+        // Create flows for each category
+        val categoryFlows = categories.map { category ->
+            localDataSource.getCardsByCategoryId(category.id).map { entities ->
+                category.id to entities.map { it.toDomainModel() }
+            }
+        }
+        
+        // Combine all flows into a single map
+        return combine(categoryFlows) { results ->
+            results.toMap()
         }
     }
     
-    override fun getCardsByCategory(category: CardCategory): Flow<List<Card>> {
-        return localDataSource.getCardsByCategory(category.name).map { entities ->
+    override fun getCardsByCategoryId(categoryId: String): Flow<List<Card>> {
+        return localDataSource.getCardsByCategoryId(categoryId).map { entities ->
             entities.map { it.toDomainModel() }
         }
     }
@@ -61,26 +66,12 @@ class CardRepositoryImpl(
         localDataSource.deleteCard(id)
     }
     
-    override suspend fun deleteCardsByCategory(category: CardCategory) {
-        localDataSource.deleteCardsByCategory(category.name)
+    override suspend fun deleteCardsByCategoryId(categoryId: String) {
+        localDataSource.deleteCardsByCategoryId(categoryId)
     }
     
     override suspend fun deleteAllCards() {
         localDataSource.deleteAllCards()
-    }
-    
-    override suspend fun seedInitialDataIfNeeded() {
-        // No-op: Disabled auto-seeding for testing empty state
-        // Uncomment the code below to re-enable seeding with dummy data
-        /*
-        val count = localDataSource.countByCategory(CardCategory.RETAIL_SHOPPING.name) +
-                localDataSource.countByCategory(CardCategory.MEMBER_CARD.name) +
-                localDataSource.countByCategory(CardCategory.ELECTRONIC_MONEY.name)
-        
-        if (count == 0L) {
-            seedInitialData()
-        }
-        */
     }
     
     // Extension functions for mapping
@@ -92,7 +83,7 @@ class CardRepositoryImpl(
             cardNumber = cardNumber,
             maskedNumber = maskedNumber,
             cardHolder = cardHolder,
-            category = CardCategory.valueOf(category),
+            categoryId = categoryId,
             colorHex = colorHex
         )
     }
@@ -105,7 +96,7 @@ class CardRepositoryImpl(
             cardNumber = cardNumber,
             maskedNumber = maskedNumber,
             cardHolder = cardHolder,
-            category = category.name,
+            categoryId = categoryId,
             colorHex = colorHex
         )
     }

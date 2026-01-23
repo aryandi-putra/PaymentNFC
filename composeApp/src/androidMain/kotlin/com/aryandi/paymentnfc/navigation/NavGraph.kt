@@ -89,6 +89,10 @@ fun NavGraph(
                 },
                 onNavigateToCardDetail = {
                     navController.navigate(Screen.CardDetail)
+                },
+                onAddCard = { categoryId ->
+                    // TODO: Pass categoryId to AddCard screen
+                    navController.navigate(Screen.AddCardType)
                 }
             )
             /* 
@@ -112,16 +116,14 @@ fun NavGraph(
                 onBack = {
                     navController.navigateUp()
                 },
-                onEdit = {
-                    // Handle edit action
-                },
                 onNavigateToHome = {
                     navController.navigate(Screen.Home(userId = "test"))
                 },
                 onNavigateToCardDetail = {
                     navController.navigate(Screen.CardDetail)
                 },
-                onAddCard = {
+                onAddCard = { categoryId ->
+                    // TODO: Pass categoryId to AddCard screen
                     navController.navigate(Screen.AddCardType)
                 }
             )

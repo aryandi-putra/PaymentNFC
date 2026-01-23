@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -19,12 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aryandi.paymentnfc.presentation.viewmodel.CardsViewModel
-import com.aryandi.paymentnfc.domain.model.CardCategory
 import com.aryandi.paymentnfc.presentation.viewmodel.CardsIntent
+import com.aryandi.paymentnfc.presentation.viewmodel.CategoryWithCards
+import com.aryandi.paymentnfc.ui.components.AddCategoryBottomSheet
 import com.aryandi.paymentnfc.ui.components.AppBottomNavBar
 import com.aryandi.paymentnfc.ui.components.BottomNavTab
-import com.aryandi.paymentnfc.ui.components.CardData
-import com.aryandi.paymentnfc.ui.components.CardType
+import com.aryandi.paymentnfc.ui.components.CategoryCreatedDialog
 import com.aryandi.paymentnfc.ui.components.SectionHeader
 import com.aryandi.paymentnfc.ui.components.StackedCardList
 import com.aryandi.paymentnfc.ui.mapper.CardMapper
@@ -32,38 +33,33 @@ import com.aryandi.paymentnfc.ui.theme.AppColors
 import org.koin.androidx.compose.koinViewModel
 
 /**
- * Cards Screen - Beautiful implementation based on design
+ * Cards Screen - Dynamic categories implementation
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardsScreen(
     onBack: () -> Unit = {},
-    onEdit: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
     onNavigateToCardDetail: () -> Unit = {},
-    onAddCard: () -> Unit = {},
+    onAddCard: (categoryId: String) -> Unit = {},
     viewModel: CardsViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var isCardNumberVisible by remember { mutableStateOf(true) }
     
-    val debitCreditCards = remember(uiState.debitCreditCards) {
-        CardMapper.toCardDataList(uiState.debitCreditCards).map { 
-            it.copy(isExpanded = true) 
-        }
-    }
+    // Add Category Bottom Sheet
+    AddCategoryBottomSheet(
+        isVisible = uiState.isAddCategorySheetVisible,
+        onDismiss = { viewModel.onIntent(CardsIntent.HideAddCategorySheet) },
+        onSave = { categoryName -> viewModel.onIntent(CardsIntent.AddCategory(categoryName)) },
+        isLoading = uiState.isAddingCategory
+    )
     
-    val memberCards = remember(uiState.memberCards) {
-        CardMapper.toCardDataList(uiState.memberCards).map { 
-            it.copy(isExpanded = true)
-        }
-    }
-    
-    val electronicMoneyCards = remember(uiState.eMoneyCards) {
-        CardMapper.toCardDataList(uiState.eMoneyCards).map { 
-            it.copy(isExpanded = true)
-        }
-    }
+    // Category Created Success Dialog
+    CategoryCreatedDialog(
+        isVisible = uiState.showCategoryCreatedDialog,
+        onDismiss = { viewModel.onIntent(CardsIntent.DismissCategoryCreatedDialog) }
+    )
     
     Scaffold(
         topBar = {
@@ -115,10 +111,12 @@ fun CardsScreen(
                 )
             )
         },
-        bottomBar = { AppBottomNavBar(
-            selectedTab = BottomNavTab.CARDS,
-            onHomeClick = onNavigateToHome
-        ) }
+        bottomBar = { 
+            AppBottomNavBar(
+                selectedTab = BottomNavTab.CARDS,
+                onHomeClick = onNavigateToHome
+            ) 
+        }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -127,6 +125,7 @@ fun CardsScreen(
                 .padding(paddingValues)
                 .padding(horizontal = 20.dp)
         ) {
+            // Header
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -148,90 +147,98 @@ fun CardsScreen(
                         icon = Icons.Default.CreditCard,
                         label = "Add Card",
                         modifier = Modifier.weight(1f),
-                        onClick = onAddCard
+                        onClick = { 
+                            // Default to first category if available
+                            uiState.categoriesWithCards.firstOrNull()?.category?.id?.let { 
+                                onAddCard(it) 
+                            }
+                        }
                     )
                     ActionCard(
                         icon = Icons.Default.Category,
                         label = "Add Categories",
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = { viewModel.onIntent(CardsIntent.ShowAddCategorySheet) }
                     )
                 }
                 Spacer(modifier = Modifier.height(24.dp))
             }
             
-            // Debit/Credit Card Section
-            item {
-                SectionHeader(
-                    title = "Debit/Credit Card", 
-                    actionText = "Add Card",
-                    isEditing = uiState.isEditing,
-                    onActionClick = onAddCard,
-                    onDeleteClick = { viewModel.onIntent(CardsIntent.DeleteCategory(CardCategory.RETAIL_SHOPPING)) }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+            // Loading State
+            if (uiState.isLoading) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(color = AppColors.PrimaryBlue)
+                    }
+                }
             }
             
-            // Stacked Cards - Debit/Credit
-            item {
-                StackedCardList(
-                    cards = debitCreditCards,
+            // Dynamic Categories with Cards
+            items(
+                items = uiState.categoriesWithCards,
+                key = { it.category.id }
+            ) { categoryWithCards ->
+                CategorySection(
+                    categoryWithCards = categoryWithCards,
                     isCardNumberVisible = isCardNumberVisible,
                     isEditing = uiState.isEditing,
                     onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
-                    onCardLongClick = { onNavigateToCardDetail() }
+                    onAddCardClick = { onAddCard(categoryWithCards.category.id) },
+                    onDeleteCategoryClick = { 
+                        viewModel.onIntent(CardsIntent.DeleteCategory(categoryWithCards.category.id)) 
+                    },
+                    onCardClick = { onNavigateToCardDetail() }
                 )
-                Spacer(modifier = Modifier.height(24.dp))
             }
             
-            // Member Card Section
+            // Bottom spacing
             item {
-                SectionHeader(
-                    title = "Member Card", 
-                    actionText = "Add Card",
-                    isEditing = uiState.isEditing,
-                    onActionClick = onAddCard,
-                    onDeleteClick = { viewModel.onIntent(CardsIntent.DeleteCategory(CardCategory.MEMBER_CARD)) }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            // Stacked Cards - Member Cards
-            item {
-                StackedCardList(
-                    cards = memberCards,
-                    isCardNumberVisible = isCardNumberVisible,
-                    isEditing = uiState.isEditing,
-                    onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
-                    onCardLongClick = { onNavigateToCardDetail() }
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            // Electronic Money Card Section
-            item {
-                SectionHeader(
-                    title = "Electronic Money Card", 
-                    actionText = "Add Card",
-                    isEditing = uiState.isEditing,
-                    onActionClick = onAddCard,
-                    onDeleteClick = { viewModel.onIntent(CardsIntent.DeleteCategory(CardCategory.ELECTRONIC_MONEY)) }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            // Stacked Cards - Electronic Money
-            item {
-                StackedCardList(
-                    cards = electronicMoneyCards,
-                    isCardNumberVisible = isCardNumberVisible,
-                    isEditing = uiState.isEditing,
-                    onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
-                    onCardLongClick = { onNavigateToCardDetail() }
-                )
                 Spacer(modifier = Modifier.height(80.dp))
             }
         }
     }
+}
+
+@Composable
+private fun CategorySection(
+    categoryWithCards: CategoryWithCards,
+    isCardNumberVisible: Boolean,
+    isEditing: Boolean,
+    onVisibilityToggle: () -> Unit,
+    onAddCardClick: () -> Unit,
+    onDeleteCategoryClick: () -> Unit,
+    onCardClick: () -> Unit
+) {
+    val cardDataList = remember(categoryWithCards.cards) {
+        CardMapper.toCardDataList(categoryWithCards.cards).map { 
+            it.copy(isExpanded = true) 
+        }
+    }
+    
+    // Section Header
+    SectionHeader(
+        title = categoryWithCards.category.displayName,
+        actionText = "Add Card",
+        isEditing = isEditing,
+        onActionClick = onAddCardClick,
+        onDeleteClick = onDeleteCategoryClick
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    
+    // Stacked Cards
+    StackedCardList(
+        cards = cardDataList,
+        isCardNumberVisible = isCardNumberVisible,
+        isEditing = isEditing,
+        onVisibilityToggle = onVisibilityToggle,
+        onCardLongClick = { onCardClick() }
+    )
+    Spacer(modifier = Modifier.height(24.dp))
 }
 
 @Composable

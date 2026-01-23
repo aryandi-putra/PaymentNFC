@@ -15,9 +15,9 @@ interface CardLocalDataSource {
     fun getAllCards(): Flow<List<CardEntity>>
     
     /**
-     * Get cards by category
+     * Get cards by categoryId
      */
-    fun getCardsByCategory(category: String): Flow<List<CardEntity>>
+    fun getCardsByCategoryId(categoryId: String): Flow<List<CardEntity>>
     
     /**
      * Get a single card by ID
@@ -37,7 +37,7 @@ interface CardLocalDataSource {
     /**
      * Delete all cards in a category
      */
-    suspend fun deleteCardsByCategory(category: String)
+    suspend fun deleteCardsByCategoryId(categoryId: String)
     
     /**
      * Delete all cards
@@ -45,7 +45,7 @@ interface CardLocalDataSource {
     suspend fun deleteAllCards()
     
     /**
-     * Count cards by category
+     * Count cards by categoryId
      */
-    suspend fun countByCategory(category: String): Long
+    suspend fun countByCategoryId(categoryId: String): Long
 }

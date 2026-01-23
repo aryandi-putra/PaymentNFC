@@ -27,15 +27,14 @@ import org.koin.androidx.compose.koinViewModel
 fun HomeV2Screen(
     onNavigateToCards: () -> Unit = {},
     onNavigateToCardDetail: () -> Unit = {},
+    onAddCard: (categoryId: String) -> Unit = {},
     viewModel: HomeV2ViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val pagerState = rememberPagerState(pageCount = { 3 })
     
-    // UI cards are directly available from ViewModel state
-    val retailCards = uiState.retailCards
-    val memberCards = uiState.memberCards
-    val eMoneyCards = uiState.eMoneyCards
+    // Dynamic page count based on categories
+    val pageCount = maxOf(uiState.categoriesWithCards.size, 1)
+    val pagerState = rememberPagerState(pageCount = { pageCount })
 
     Scaffold(
         topBar = {
@@ -45,12 +44,17 @@ fun HomeV2Screen(
                         text = "ariapay",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = AppColors.TextPrimary // Or a specific teal color if needed
+                        color = AppColors.TextPrimary
                     )
                 },
                 actions = {
                     IconButton(
-                        onClick = { },
+                        onClick = { 
+                            // Add card to current category
+                            uiState.categoriesWithCards.getOrNull(pagerState.currentPage)?.category?.id?.let {
+                                onAddCard(it)
+                            }
+                        },
                         modifier = Modifier
                             .background(AppColors.TextPrimary, CircleShape)
                             .size(32.dp)
@@ -83,70 +87,89 @@ fun HomeV2Screen(
                 .padding(vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = 24.dp),
-                pageSpacing = 16.dp,
-                verticalAlignment = Alignment.Top
-            ) { page ->
-                Column {
-                    val title = when(page) {
-                        0 -> "Retail & Shopping"
-                        1 -> "Member Card"
-                        else -> "Electronic Money Card"
-                    }
-                    
-                    SectionHeaderWithViewAll(
-                        title = title,
-                        modifier = Modifier.padding(bottom = 16.dp),
-                        onViewAllClick = { } // Show More action
+            if (uiState.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = AppColors.PrimaryBlue)
+                }
+            } else if (uiState.categoriesWithCards.isEmpty()) {
+                // Empty state when no categories exist
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    EmptyCardState(
+                        onAddCardClick = { onNavigateToCards() }
                     )
+                }
+            } else {
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 24.dp),
+                    pageSpacing = 16.dp,
+                    verticalAlignment = Alignment.Top
+                ) { page ->
+                    val categoryWithCards = uiState.categoriesWithCards.getOrNull(page)
                     
-                    val cards = when(page) {
-                        0 -> retailCards
-                        1 -> memberCards
-                        else -> eMoneyCards
-                    }
-                    
-                    if (cards.isEmpty()) {
-                        EmptyCardState(
-                            onAddCardClick = { /* Handle add card action */ }
+                    Column {
+                        SectionHeaderWithViewAll(
+                            title = categoryWithCards?.category?.displayName ?: "Category",
+                            modifier = Modifier.padding(bottom = 16.dp),
+                            onViewAllClick = { onNavigateToCards() }
                         )
-                    } else {
-                        var isCardNumberVisible by remember { mutableStateOf(false) }
                         
-                        DirectStackedCardList(
-                            cards = cards,
-                            stackOffset = 100.dp,
-                            isCardNumberVisible = isCardNumberVisible,
-                            onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
-                            onCardClick = { onNavigateToCardDetail() }
-                        )
+                        val cards = categoryWithCards?.cards ?: emptyList()
+                        
+                        if (cards.isEmpty()) {
+                            EmptyCardState(
+                                onAddCardClick = { 
+                                    categoryWithCards?.category?.id?.let { onAddCard(it) }
+                                }
+                            )
+                        } else {
+                            var isCardNumberVisible by remember { mutableStateOf(false) }
+                            
+                            DirectStackedCardList(
+                                cards = cards,
+                                stackOffset = 100.dp,
+                                isCardNumberVisible = isCardNumberVisible,
+                                onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
+                                onCardClick = { onNavigateToCardDetail() }
+                            )
+                        }
                     }
                 }
             }
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            // Pager Indicators
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                repeat(pagerState.pageCount) { index ->
-                    val isSelected = pagerState.currentPage == index
-                    val width = if (isSelected) 24.dp else 8.dp
-                    val color = if (isSelected) AppColors.TextPrimary else AppColors.TextGray.copy(alpha = 0.3f)
-                    
-                    Box(
-                        modifier = Modifier
-                            .height(8.dp)
-                            .width(width)
-                            .background(color, CircleShape)
-                    )
+            // Pager Indicators - only show if there are categories
+            if (uiState.categoriesWithCards.isNotEmpty()) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    repeat(pageCount) { index ->
+                        val isSelected = pagerState.currentPage == index
+                        val width = if (isSelected) 24.dp else 8.dp
+                        val color = if (isSelected) AppColors.TextPrimary else AppColors.TextGray.copy(alpha = 0.3f)
+                        
+                        Box(
+                            modifier = Modifier
+                                .height(8.dp)
+                                .width(width)
+                                .background(color, CircleShape)
+                        )
+                    }
                 }
             }
             

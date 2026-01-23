@@ -11,17 +11,11 @@ data class Card(
     val cardNumber: String = "**** **** **** ****",
     val maskedNumber: String = "$•••••",
     val cardHolder: String = "",
-    val category: CardCategory,
+    val categoryId: String, // References Category.id
     val colorHex: String = "#FF6B4A" // Default orange color
 )
 
 enum class CardTypeModel {
     VISA,
     MASTERCARD
-}
-
-enum class CardCategory {
-    RETAIL_SHOPPING,
-    MEMBER_CARD,
-    ELECTRONIC_MONEY
 }
