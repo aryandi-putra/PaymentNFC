@@ -17,13 +17,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aryandi.paymentnfc.presentation.viewmodel.CardsViewModel
 import com.aryandi.paymentnfc.ui.components.AppBottomNavBar
 import com.aryandi.paymentnfc.ui.components.BottomNavTab
 import com.aryandi.paymentnfc.ui.components.CardData
 import com.aryandi.paymentnfc.ui.components.CardType
 import com.aryandi.paymentnfc.ui.components.SectionHeader
 import com.aryandi.paymentnfc.ui.components.StackedCardList
+import com.aryandi.paymentnfc.ui.mapper.CardMapper
 import com.aryandi.paymentnfc.ui.theme.AppColors
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * Cards Screen - Beautiful implementation based on design
@@ -35,131 +39,28 @@ fun CardsScreen(
     onEdit: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
     onNavigateToCardDetail: () -> Unit = {},
-    onAddCard: () -> Unit = {}
+    onAddCard: () -> Unit = {},
+    viewModel: CardsViewModel = koinViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var isCardNumberVisible by remember { mutableStateOf(true) }
     
-    val debitCreditCards = remember {
-        listOf(
-            CardData(
-                bankName = "NiceBank",
-                cardType = CardType.MASTERCARD,
-                backgroundColor = AppColors.CardGreen,
-                cardNumber = "**** **** **** 1234",
-                maskedNumber = "$2,500.00",
-                cardHolder = "Alexander Parra",
-                isExpanded = true
-            ),
-            CardData(
-                bankName = "AriaBank",
-                cardType = CardType.VISA,
-                backgroundColor = AppColors.CardOrange,
-                cardNumber = "**** **** **** 5678",
-                maskedNumber = "$1,850.50",
-                cardHolder = "Alexander Parra",
-                isExpanded = true
-            ),
-            CardData(
-                bankName = "AriaBank",
-                cardType = CardType.MASTERCARD,
-                backgroundColor = AppColors.CardYellow,
-                cardNumber = "**** **** **** 9012",
-                maskedNumber = "$3,200.75",
-                cardHolder = "Alexander Parra",
-                isExpanded = true
-            ),
-            CardData(
-                bankName = "WeBank",
-                cardType = CardType.VISA,
-                backgroundColor = AppColors.CardOlive,
-                cardNumber = "**** **** **** 3456",
-                maskedNumber = "$950.00",
-                cardHolder = "Alexander Parra",
-                isExpanded = true
-            ),
-            CardData(
-                bankName = "TrustBank",
-                cardType = CardType.VISA,
-                backgroundColor = AppColors.CardPurple,
-                cardNumber = "**** **** **** 7890",
-                maskedNumber = "$5,420.25",
-                cardHolder = "Alexander Parra",
-                isExpanded = true
-            )
-        )
+    val debitCreditCards = remember(uiState.debitCreditCards) {
+        CardMapper.toCardDataList(uiState.debitCreditCards).map { 
+            it.copy(isExpanded = true) 
+        }
     }
-
-    val memberCards = remember {
-        listOf(
-            CardData(
-                bankName = "Alfagift",
-                cardType = CardType.MASTERCARD, // Placeholder for gift icon
-                backgroundColor = AppColors.CardBrown,
-                cardNumber = "**** **** **** 1111",
-                maskedNumber = "1,250 pts",
-                cardHolder = "Alexander Parra",
-                isExpanded = true
-            ),
-            CardData(
-                bankName = "IKEA",
-                cardType = CardType.VISA, // Placeholder for IKEA logo
-                backgroundColor = AppColors.CardYellow,
-                cardNumber = "**** **** **** 2222",
-                maskedNumber = "560 pts",
-                cardHolder = "Alexander Parra",
-                isExpanded = true
-            ),
-            CardData(
-                bankName = "MAP",
-                cardType = CardType.MASTERCARD, // Placeholder for MAP logo
-                backgroundColor = AppColors.CardRed,
-                cardNumber = "**** **** **** 3333",
-                maskedNumber = "3,400 pts",
-                cardHolder = "Alexander Parra",
-                isExpanded = true
-            ),
-            CardData(
-                bankName = "Starbucks",
-                cardType = CardType.VISA, // Placeholder for Starbucks logo
-                backgroundColor = AppColors.CardDarkGreen,
-                cardNumber = "**** **** **** 5678",
-                maskedNumber = "$125.50",
-                cardHolder = "Alexander Parra",
-                isExpanded = true
-            )
-        )
+    
+    val memberCards = remember(uiState.memberCards) {
+        CardMapper.toCardDataList(uiState.memberCards).map { 
+            it.copy(isExpanded = true)
+        }
     }
-
-    val electronicMoneyCards = remember {
-        listOf(
-            CardData(
-                bankName = "BNI Tapcash",
-                cardType = CardType.MASTERCARD, // Placeholder for Tapcash logo
-                backgroundColor = AppColors.CardOrange,
-                cardNumber = "**** **** **** 4444",
-                maskedNumber = "$85.00",
-                cardHolder = "Alexander Parra",
-                isExpanded = true
-            ),
-            CardData(
-                bankName = "Mandiri E-Money",
-                cardType = CardType.VISA, // Placeholder for e-money logo
-                backgroundColor = AppColors.CardNavy,
-                cardNumber = "**** **** **** 5555",
-                maskedNumber = "$120.50",
-                cardHolder = "Alexander Parra",
-                isExpanded = true
-            ),
-            CardData(
-                bankName = "Flazz BCA",
-                cardType = CardType.MASTERCARD, // Placeholder for Flazz logo
-                backgroundColor = AppColors.CardBlue,
-                cardNumber = "**** **** **** 9012",
-                maskedNumber = "$250.75",
-                cardHolder = "Alexander Parra",
-                isExpanded = true
-            )
-        )
+    
+    val electronicMoneyCards = remember(uiState.eMoneyCards) {
+        CardMapper.toCardDataList(uiState.eMoneyCards).map { 
+            it.copy(isExpanded = true)
+        }
     }
     
     Scaffold(
