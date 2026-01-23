@@ -47,13 +47,19 @@ import com.aryandi.paymentnfc.ui.components.SuccessDialog
 import com.aryandi.paymentnfc.ui.components.TransactionItem
 import com.aryandi.paymentnfc.ui.theme.AppColors
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import org.koin.androidx.compose.koinViewModel
+import com.aryandi.paymentnfc.presentation.viewmodel.CardDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardDetailScreen(
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    viewModel: CardDetailViewModel = koinViewModel()
 ) {
-    // Dummy Data
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // Dummy Data for Card (Kept as is for now, focusing on transactions)
     val cardData = remember {
         CardData(
             bankName = "WeBank",
@@ -63,15 +69,6 @@ fun CardDetailScreen(
         )
     }
     
-    val transactions = remember {
-        listOf(
-            Transaction("Transfer from BCA", "Today, 11:00pm", "+$2.95", "confirmed"),
-            Transaction("Walmart", "Today, 11:00pm", "-$11.23", "confirmed"),
-            Transaction("Muse Restaurant", "Today, 11:00pm", "-$76.12", "confirmed"),
-            Transaction("McDonalds", "Yesterday, 09:30am", "-$15.50", "confirmed")
-        )
-    }
-
     var showSuccessDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -145,20 +142,27 @@ fun CardDetailScreen(
                 
                 Spacer(modifier = Modifier.height(24.dp))
                 
-                Text(
-                    text = "Today",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = AppColors.TextPrimary
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(transactions) { transaction ->
-                        TransactionItem(transaction)
+                    uiState.transactions.forEach { (date, transactions) ->
+                        item {
+                            Text(
+                                text = date,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = AppColors.TextPrimary
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                        
+                        items(transactions) { transaction ->
+                            TransactionItem(transaction)
+                        }
+                        
+                        item {
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
                     }
                 }
             }
@@ -229,5 +233,7 @@ fun CardDetailScreen(
 @Preview
 @Composable
 fun CardDetailScreenPreview() {
-    CardDetailScreen()
+    // Note: Preview won't work with koinViewModel injection without Koin context
+    // Ideally we'd wrap this or provide a fake VM, but for now just commenting out
+    // or we can use a separate Composable for the content that takes state as params
 }
