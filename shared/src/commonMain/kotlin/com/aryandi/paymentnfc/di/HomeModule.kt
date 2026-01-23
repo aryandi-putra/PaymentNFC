@@ -12,7 +12,7 @@ val homeModule = module {
     single<HomeApiService> { HomeApiServiceImpl(get()) }
     single<HomeRepository> { HomeRepositoryImpl(get()) }
     
-    // Use Cases
+    // Use Cases (Domain layer)
     factory { GetTransactionsUseCase(get()) }
     factory { GetCardsUseCase() }
 }
