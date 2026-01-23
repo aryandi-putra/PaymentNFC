@@ -46,43 +46,43 @@ fun CardsScreen(
                 cardType = CardType.MASTERCARD,
                 backgroundColor = AppColors.CardGreen,
                 cardNumber = "**** **** **** 1234",
-                maskedNumber = "$•••••",
+                maskedNumber = "$2,500.00",
                 cardHolder = "Alexander Parra",
-                isExpanded = false
+                isExpanded = true
             ),
             CardData(
                 bankName = "AriaBank",
                 cardType = CardType.VISA,
                 backgroundColor = AppColors.CardOrange,
-                cardNumber = "**** **** **** 1234",
-                maskedNumber = "$•••••",
+                cardNumber = "**** **** **** 5678",
+                maskedNumber = "$1,850.50",
                 cardHolder = "Alexander Parra",
-                isExpanded = false
+                isExpanded = true
             ),
             CardData(
                 bankName = "AriaBank",
                 cardType = CardType.MASTERCARD,
                 backgroundColor = AppColors.CardYellow,
-                cardNumber = "**** **** **** 1234",
-                maskedNumber = "$•••••",
+                cardNumber = "**** **** **** 9012",
+                maskedNumber = "$3,200.75",
                 cardHolder = "Alexander Parra",
-                isExpanded = false
+                isExpanded = true
             ),
             CardData(
                 bankName = "WeBank",
                 cardType = CardType.VISA,
                 backgroundColor = AppColors.CardOlive,
-                cardNumber = "**** **** **** 1234",
-                maskedNumber = "$•••••",
+                cardNumber = "**** **** **** 3456",
+                maskedNumber = "$950.00",
                 cardHolder = "Alexander Parra",
-                isExpanded = false
+                isExpanded = true
             ),
             CardData(
                 bankName = "TrustBank",
                 cardType = CardType.VISA,
                 backgroundColor = AppColors.CardPurple,
-                cardNumber = "**** **** **** 1234",
-                maskedNumber = "$•••••",
+                cardNumber = "**** **** **** 7890",
+                maskedNumber = "$5,420.25",
                 cardHolder = "Alexander Parra",
                 isExpanded = true
             )
@@ -95,26 +95,35 @@ fun CardsScreen(
                 bankName = "Alfagift",
                 cardType = CardType.MASTERCARD, // Placeholder for gift icon
                 backgroundColor = AppColors.CardBrown,
-                isExpanded = false
+                cardNumber = "**** **** **** 1111",
+                maskedNumber = "1,250 pts",
+                cardHolder = "Alexander Parra",
+                isExpanded = true
             ),
             CardData(
                 bankName = "IKEA",
                 cardType = CardType.VISA, // Placeholder for IKEA logo
                 backgroundColor = AppColors.CardYellow,
-                isExpanded = false
+                cardNumber = "**** **** **** 2222",
+                maskedNumber = "560 pts",
+                cardHolder = "Alexander Parra",
+                isExpanded = true
             ),
             CardData(
                 bankName = "MAP",
                 cardType = CardType.MASTERCARD, // Placeholder for MAP logo
                 backgroundColor = AppColors.CardRed,
-                isExpanded = false
+                cardNumber = "**** **** **** 3333",
+                maskedNumber = "3,400 pts",
+                cardHolder = "Alexander Parra",
+                isExpanded = true
             ),
             CardData(
                 bankName = "Starbucks",
                 cardType = CardType.VISA, // Placeholder for Starbucks logo
                 backgroundColor = AppColors.CardDarkGreen,
                 cardNumber = "**** **** **** 5678",
-                maskedNumber = "$•••••",
+                maskedNumber = "$125.50",
                 cardHolder = "Alexander Parra",
                 isExpanded = true
             )
@@ -127,20 +136,26 @@ fun CardsScreen(
                 bankName = "BNI Tapcash",
                 cardType = CardType.MASTERCARD, // Placeholder for Tapcash logo
                 backgroundColor = AppColors.CardOrange,
-                isExpanded = false
+                cardNumber = "**** **** **** 4444",
+                maskedNumber = "$85.00",
+                cardHolder = "Alexander Parra",
+                isExpanded = true
             ),
             CardData(
                 bankName = "Mandiri E-Money",
                 cardType = CardType.VISA, // Placeholder for e-money logo
                 backgroundColor = AppColors.CardNavy,
-                isExpanded = false
+                cardNumber = "**** **** **** 5555",
+                maskedNumber = "$120.50",
+                cardHolder = "Alexander Parra",
+                isExpanded = true
             ),
             CardData(
                 bankName = "Flazz BCA",
                 cardType = CardType.MASTERCARD, // Placeholder for Flazz logo
                 backgroundColor = AppColors.CardBlue,
                 cardNumber = "**** **** **** 9012",
-                maskedNumber = "$•••••",
+                maskedNumber = "$250.75",
                 cardHolder = "Alexander Parra",
                 isExpanded = true
             )

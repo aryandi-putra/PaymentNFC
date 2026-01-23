@@ -57,6 +57,7 @@ fun DirectStackedCardList(
                 CreditCard(
                     cardData = card,
                     isVisible = isCardNumberVisible,
+                    isExpanded = true, // Always show masked data in home screen
                     onVisibilityToggle = onVisibilityToggle
                 )
             }
