@@ -39,7 +39,8 @@ class CardLocalDataSourceImpl(
             maskedNumber = card.maskedNumber,
             cardHolder = card.cardHolder,
             categoryId = card.categoryId,
-            colorHex = card.colorHex
+            colorHex = card.colorHex,
+            isDefault = card.isDefault
         )
     }
     
@@ -57,5 +58,16 @@ class CardLocalDataSourceImpl(
     
     override suspend fun countByCategoryId(categoryId: String): Long = withContext(Dispatchers.IO) {
         queries.countByCategoryId(categoryId).executeAsOne()
+    }
+    
+    override suspend fun setCardAsDefault(cardId: String) = withContext(Dispatchers.IO) {
+        // First clear all defaults
+        queries.clearAllDefaults()
+        // Then set the new default
+        queries.setCardAsDefault(cardId)
+    }
+    
+    override suspend fun getDefaultCard(): CardEntity? = withContext(Dispatchers.IO) {
+        queries.selectDefaultCard().executeAsOneOrNull()
     }
 }

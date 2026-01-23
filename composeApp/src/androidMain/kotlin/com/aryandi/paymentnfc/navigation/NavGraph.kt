@@ -87,8 +87,8 @@ fun NavGraph(
                 onNavigateToCards = {
                     navController.navigate(Screen.Cards)
                 },
-                onNavigateToCardDetail = {
-                    navController.navigate(Screen.CardDetail)
+                onNavigateToCardDetail = { cardId ->
+                    navController.navigate(Screen.CardDetail(cardId = cardId))
                 },
                 onAddCard = { categoryId ->
                     // TODO: Pass categoryId to AddCard screen
@@ -119,8 +119,8 @@ fun NavGraph(
                 onNavigateToHome = {
                     navController.navigate(Screen.Home(userId = "test"))
                 },
-                onNavigateToCardDetail = {
-                    navController.navigate(Screen.CardDetail)
+                onNavigateToCardDetail = { cardId ->
+                    navController.navigate(Screen.CardDetail(cardId = cardId))
                 },
                 onAddCard = { categoryId ->
                     // TODO: Pass categoryId to AddCard screen
@@ -129,8 +129,10 @@ fun NavGraph(
             )
         }
 
-        composable<Screen.CardDetail> {
+        composable<Screen.CardDetail> { backStackEntry ->
+            val cardDetail = backStackEntry.toRoute<Screen.CardDetail>()
             CardDetailScreen(
+                cardId = cardDetail.cardId,
                 onBack = {
                     navController.navigateUp()
                 }

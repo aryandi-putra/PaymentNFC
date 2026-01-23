@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,41 +37,92 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.aryandi.paymentnfc.domain.model.CardTypeModel
 import com.aryandi.paymentnfc.domain.model.Transaction
+import com.aryandi.paymentnfc.presentation.viewmodel.CardDetailEvent
+import com.aryandi.paymentnfc.presentation.viewmodel.CardDetailIntent
 import com.aryandi.paymentnfc.ui.components.CardData
 import com.aryandi.paymentnfc.ui.components.CardType
 import com.aryandi.paymentnfc.ui.components.DetailedCreditCard
 import com.aryandi.paymentnfc.ui.components.DeleteCardDialog
 import com.aryandi.paymentnfc.ui.components.FilledRoundedTextField
 import com.aryandi.paymentnfc.ui.components.FilterButton
+import com.aryandi.paymentnfc.ui.components.MoreActionsBottomSheet
+import com.aryandi.paymentnfc.ui.components.SetDefaultPaymentDialog
 import com.aryandi.paymentnfc.ui.components.SuccessDialog
 import com.aryandi.paymentnfc.ui.components.TransactionItem
 import com.aryandi.paymentnfc.ui.theme.AppColors
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 import com.aryandi.paymentnfc.presentation.viewmodel.CardDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardDetailScreen(
+    cardId: String,
     onBack: () -> Unit = {},
     viewModel: CardDetailViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    
+    // Load card data on first composition
+    LaunchedEffect(cardId) {
+        viewModel.onIntent(CardDetailIntent.LoadCard(cardId))
+    }
 
-    // Dummy Data for Card (Kept as is for now, focusing on transactions)
-    val cardData = remember {
-        CardData(
-            bankName = "WeBank",
+    // Map domain Card to UI CardData
+    val cardData = remember(uiState.card) {
+        uiState.card?.let { card ->
+            CardData(
+                bankName = card.bankName,
+                cardType = when (card.cardType) {
+                    CardTypeModel.VISA -> CardType.VISA
+                    CardTypeModel.MASTERCARD -> CardType.MASTERCARD
+                },
+                backgroundColor = try {
+                    Color(android.graphics.Color.parseColor(card.colorHex))
+                } catch (e: Exception) {
+                    AppColors.CardOlive
+                },
+                cardHolder = card.cardHolder,
+                cardNumber = card.cardNumber,
+                maskedNumber = card.maskedNumber
+            )
+        } ?: CardData(
+            bankName = "Loading...",
             cardType = CardType.VISA,
             backgroundColor = AppColors.CardOlive,
-            cardHolder = "Alexander Parra"
+            cardHolder = ""
         )
     }
     
-    var showSuccessDialog by remember { mutableStateOf(false) }
+    // Dialog states
+    var showMoreActionsSheet by remember { mutableStateOf(false) }
+    var showSetDefaultPaymentDialog by remember { mutableStateOf(false) }
+    var showDefaultPaymentSuccessDialog by remember { mutableStateOf(false) }
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showDeleteSuccessDialog by remember { mutableStateOf(false) }
+    
+    // Handle ViewModel events
+    LaunchedEffect(Unit) {
+        viewModel.events.collectLatest { event ->
+            when (event) {
+                CardDetailEvent.DefaultPaymentSet -> {
+                    showSetDefaultPaymentDialog = false
+                    showDefaultPaymentSuccessDialog = true
+                }
+                CardDetailEvent.CardDeleted -> {
+                    showDeleteDialog = false
+                    showDeleteSuccessDialog = true
+                }
+                is CardDetailEvent.Error -> {
+                    // Could show a snackbar here
+                }
+            }
+        }
+    }
 
     val scaffoldState = rememberBottomSheetScaffoldState()
 
@@ -89,10 +141,10 @@ fun CardDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showDeleteDialog = true }) {
+                    IconButton(onClick = { showMoreActionsSheet = true }) {
                         Icon(
                             imageVector = Icons.Default.MoreHoriz,
-                            contentDescription = "More",
+                            contentDescription = "More Actions",
                             tint = AppColors.TextPrimary
                         )
                     }
@@ -199,7 +251,7 @@ fun CardDetailScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 
                 OutlinedButton(
-                    onClick = { showSuccessDialog = true },
+                    onClick = { /* TODO: Implement show card details functionality */ },
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -213,19 +265,57 @@ fun CardDetailScreen(
         }
     }
 
-    if (showSuccessDialog) {
+    // More Actions Bottom Sheet
+    MoreActionsBottomSheet(
+        isVisible = showMoreActionsSheet,
+        onDismiss = { showMoreActionsSheet = false },
+        onSetDefaultPayment = { 
+            showMoreActionsSheet = false
+            showSetDefaultPaymentDialog = true 
+        },
+        onDeleteCard = { 
+            showMoreActionsSheet = false
+            showDeleteDialog = true 
+        }
+    )
+    
+    // Set Default Payment Confirmation Dialog
+    SetDefaultPaymentDialog(
+        isVisible = showSetDefaultPaymentDialog,
+        onConfirm = {
+            viewModel.onIntent(CardDetailIntent.SetDefaultPayment)
+        },
+        onCancel = { showSetDefaultPaymentDialog = false }
+    )
+    
+    // Success Dialog (Default Payment Updated)
+    if (showDefaultPaymentSuccessDialog) {
         SuccessDialog(
-            onDismiss = { showSuccessDialog = false }
+            title = "Default Payment Updated",
+            description = "Your payment default has been updated successfully.",
+            onDismiss = { showDefaultPaymentSuccessDialog = false }
         )
     }
 
+    // Delete Card Confirmation Dialog
     if (showDeleteDialog) {
         DeleteCardDialog(
             onDelete = { 
-                showDeleteDialog = false
-                // Logic to delete card could go here
+                viewModel.onIntent(CardDetailIntent.DeleteCard)
             },
             onDismiss = { showDeleteDialog = false }
+        )
+    }
+    
+    // Success Dialog (Card Deleted)
+    if (showDeleteSuccessDialog) {
+        SuccessDialog(
+            title = "The Card Has Been Deleted",
+            description = "The card has been successfully deleted and is no longer active.",
+            onDismiss = { 
+                showDeleteSuccessDialog = false
+                onBack()
+            }
         )
     }
 }

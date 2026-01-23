@@ -26,6 +26,7 @@ import com.aryandi.paymentnfc.ui.components.AddCategoryBottomSheet
 import com.aryandi.paymentnfc.ui.components.AppBottomNavBar
 import com.aryandi.paymentnfc.ui.components.BottomNavTab
 import com.aryandi.paymentnfc.ui.components.CategoryCreatedDialog
+import com.aryandi.paymentnfc.ui.components.EmptyCardState
 import com.aryandi.paymentnfc.ui.components.SectionHeader
 import com.aryandi.paymentnfc.ui.components.StackedCardList
 import com.aryandi.paymentnfc.ui.mapper.CardMapper
@@ -40,7 +41,7 @@ import org.koin.androidx.compose.koinViewModel
 fun CardsScreen(
     onBack: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
-    onNavigateToCardDetail: () -> Unit = {},
+    onNavigateToCardDetail: (cardId: String) -> Unit = {},
     onAddCard: (categoryId: String) -> Unit = {},
     viewModel: CardsViewModel = koinViewModel()
 ) {
@@ -192,7 +193,7 @@ fun CardsScreen(
                     onDeleteCategoryClick = { 
                         viewModel.onIntent(CardsIntent.DeleteCategory(categoryWithCards.category.id)) 
                     },
-                    onCardClick = { onNavigateToCardDetail() }
+                    onCardClick = { cardId -> onNavigateToCardDetail(cardId) }
                 )
             }
             
@@ -212,7 +213,7 @@ private fun CategorySection(
     onVisibilityToggle: () -> Unit,
     onAddCardClick: () -> Unit,
     onDeleteCategoryClick: () -> Unit,
-    onCardClick: () -> Unit
+    onCardClick: (cardId: String) -> Unit
 ) {
     val cardDataList = remember(categoryWithCards.cards) {
         CardMapper.toCardDataList(categoryWithCards.cards).map { 
@@ -230,14 +231,22 @@ private fun CategorySection(
     )
     Spacer(modifier = Modifier.height(16.dp))
     
-    // Stacked Cards
-    StackedCardList(
-        cards = cardDataList,
-        isCardNumberVisible = isCardNumberVisible,
-        isEditing = isEditing,
-        onVisibilityToggle = onVisibilityToggle,
-        onCardLongClick = { onCardClick() }
-    )
+    // Show empty state or cards
+    if (cardDataList.isEmpty()) {
+        EmptyCardState(
+            modifier = Modifier.padding(horizontal = 0.dp),
+            onAddCardClick = onAddCardClick
+        )
+    } else {
+        // Stacked Cards
+        StackedCardList(
+            cards = cardDataList,
+            isCardNumberVisible = isCardNumberVisible,
+            isEditing = isEditing,
+            onVisibilityToggle = onVisibilityToggle,
+            onCardLongClick = { cardId -> onCardClick(cardId) }
+        )
+    }
     Spacer(modifier = Modifier.height(24.dp))
 }
 

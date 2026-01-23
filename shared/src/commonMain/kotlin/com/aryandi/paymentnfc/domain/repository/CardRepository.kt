@@ -54,4 +54,14 @@ interface CardRepository {
      * Delete all cards
      */
     suspend fun deleteAllCards()
+    
+    /**
+     * Set a card as the default payment method
+     */
+    suspend fun setCardAsDefault(cardId: String)
+    
+    /**
+     * Get the current default card
+     */
+    suspend fun getDefaultCard(): Card?
 }

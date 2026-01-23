@@ -22,6 +22,8 @@ import androidx.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SuccessDialog(
+    title: String = "Default Payment Updated",
+    description: String = "Your payment default has been updated successfully.",
     onDismiss: () -> Unit = {}
 ) {
     ModalBottomSheet(
@@ -88,7 +90,7 @@ fun SuccessDialog(
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = "Default Payment Updated",
+                text = title,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = AppColors.TextPrimary,
@@ -98,7 +100,7 @@ fun SuccessDialog(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Your payment default has been updated successfully.",
+                text = description,
                 fontSize = 14.sp,
                 color = AppColors.TextSecondary,
                 textAlign = TextAlign.Center,

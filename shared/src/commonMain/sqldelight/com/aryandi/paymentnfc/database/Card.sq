@@ -7,7 +7,8 @@ CREATE TABLE CardEntity (
     maskedNumber TEXT NOT NULL DEFAULT '$•••••',
     cardHolder TEXT NOT NULL DEFAULT '',
     categoryId TEXT NOT NULL,
-    colorHex TEXT NOT NULL DEFAULT '#FF6B4A'
+    colorHex TEXT NOT NULL DEFAULT '#FF6B4A',
+    isDefault INTEGER NOT NULL DEFAULT 0
 );
 
 -- Get all cards
@@ -22,10 +23,21 @@ SELECT * FROM CardEntity WHERE categoryId = ?;
 selectById:
 SELECT * FROM CardEntity WHERE id = ?;
 
+-- Get default card
+selectDefaultCard:
+SELECT * FROM CardEntity WHERE isDefault = 1 LIMIT 1;
+
 -- Insert or replace a card
 insertCard:
-INSERT OR REPLACE INTO CardEntity (id, bankName, cardType, cardNumber, maskedNumber, cardHolder, categoryId, colorHex)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO CardEntity (id, bankName, cardType, cardNumber, maskedNumber, cardHolder, categoryId, colorHex, isDefault)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+-- Set card as default (first clear all defaults, then set the new one)
+clearAllDefaults:
+UPDATE CardEntity SET isDefault = 0;
+
+setCardAsDefault:
+UPDATE CardEntity SET isDefault = 1 WHERE id = ?;
 
 -- Delete a card by id
 deleteById:

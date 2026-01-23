@@ -74,6 +74,14 @@ class CardRepositoryImpl(
         localDataSource.deleteAllCards()
     }
     
+    override suspend fun setCardAsDefault(cardId: String) {
+        localDataSource.setCardAsDefault(cardId)
+    }
+    
+    override suspend fun getDefaultCard(): Card? {
+        return localDataSource.getDefaultCard()?.toDomainModel()
+    }
+    
     // Extension functions for mapping
     private fun CardEntity.toDomainModel(): Card {
         return Card(
@@ -84,7 +92,8 @@ class CardRepositoryImpl(
             maskedNumber = maskedNumber,
             cardHolder = cardHolder,
             categoryId = categoryId,
-            colorHex = colorHex
+            colorHex = colorHex,
+            isDefault = isDefault == 1L
         )
     }
     
@@ -97,7 +106,8 @@ class CardRepositoryImpl(
             maskedNumber = maskedNumber,
             cardHolder = cardHolder,
             categoryId = categoryId,
-            colorHex = colorHex
+            colorHex = colorHex,
+            isDefault = if (isDefault) 1L else 0L
         )
     }
 }

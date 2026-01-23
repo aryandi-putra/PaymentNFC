@@ -48,4 +48,14 @@ interface CardLocalDataSource {
      * Count cards by categoryId
      */
     suspend fun countByCategoryId(categoryId: String): Long
+    
+    /**
+     * Set a card as default payment (clears other defaults first)
+     */
+    suspend fun setCardAsDefault(cardId: String)
+    
+    /**
+     * Get the current default card
+     */
+    suspend fun getDefaultCard(): CardEntity?
 }

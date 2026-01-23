@@ -34,6 +34,7 @@ enum class CardType {
  * Data class representing credit card information
  */
 data class CardData(
+    val id: String = "",
     val bankName: String,
     val cardType: CardType,
     val backgroundColor: Color,

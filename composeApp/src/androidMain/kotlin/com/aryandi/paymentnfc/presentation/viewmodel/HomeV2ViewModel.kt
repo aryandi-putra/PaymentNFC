@@ -7,11 +7,14 @@ import com.aryandi.paymentnfc.domain.usecase.GetCardsUseCase
 import com.aryandi.paymentnfc.domain.usecase.GetCategoriesUseCase
 import com.aryandi.paymentnfc.ui.components.CardData
 import com.aryandi.paymentnfc.ui.mapper.CardMapper
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -46,67 +49,50 @@ class HomeV2ViewModel(
         seedDefaultCategoriesAndObserve()
     }
 
+    /**
+     * Seed default categories and start observing data
+     * Using a single coroutine to avoid race conditions
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun seedDefaultCategoriesAndObserve() {
         viewModelScope.launch {
-            // Seed default categories if needed
-            getCategoriesUseCase.seedDefaultCategoriesIfNeeded()
+            _uiState.update { it.copy(isLoading = true) }
             
-            // Observe categories
-            observeCategoriesWithCards()
-        }
-    }
-
-    /**
-     * Observe categories and cards from database reactively
-     */
-    private fun observeCategoriesWithCards() {
-        viewModelScope.launch {
-            getCategoriesUseCase.observeCategories()
-                .onStart { _uiState.update { it.copy(isLoading = true) } }
-                .catch { error ->
-                    _uiState.update { 
-                        it.copy(
-                            isLoading = false,
-                            error = error.message ?: "Failed to load categories"
-                        ) 
-                    }
-                }
-                .collect { categories ->
-                    observeCardsForCategories(categories)
-                }
-        }
-    }
-
-    private fun observeCardsForCategories(categories: List<Category>) {
-        viewModelScope.launch {
-            if (categories.isEmpty()) {
-                _uiState.update { 
-                    it.copy(
-                        categoriesWithCards = emptyList(),
-                        isLoading = false,
-                        error = null
-                    )
-                }
-                return@launch
+            // Seed default categories if needed
+            try {
+                getCategoriesUseCase.seedDefaultCategoriesIfNeeded()
+            } catch (e: Exception) {
+                // Continue even if seeding fails
             }
             
-            getCardsUseCase.observeCardsGroupedByCategory(categories)
+            // Observe categories and cards together in the same coroutine
+            getCategoriesUseCase.observeCategories()
+                .flatMapLatest { categories ->
+                    if (categories.isEmpty()) {
+                        // Return a flow with empty list when no categories
+                        flowOf(emptyList<HomeCategoryWithCards>())
+                    } else {
+                        // Switch to cards flow for current categories
+                        getCardsUseCase.observeCardsGroupedByCategory(categories)
+                            .map { cardsMap ->
+                                categories.map { category ->
+                                    HomeCategoryWithCards(
+                                        category = category,
+                                        cards = CardMapper.toCardDataList(cardsMap[category.id] ?: emptyList())
+                                    )
+                                }
+                            }
+                    }
+                }
                 .catch { error ->
                     _uiState.update { 
                         it.copy(
                             isLoading = false,
-                            error = error.message ?: "Failed to load cards"
+                            error = error.message ?: "Failed to load data"
                         ) 
                     }
                 }
-                .collect { cardsMap ->
-                    val categoriesWithCards = categories.map { category ->
-                        HomeCategoryWithCards(
-                            category = category,
-                            cards = CardMapper.toCardDataList(cardsMap[category.id] ?: emptyList())
-                        )
-                    }
-                    
+                .collect { categoriesWithCards ->
                     _uiState.update { 
                         it.copy(
                             categoriesWithCards = categoriesWithCards,

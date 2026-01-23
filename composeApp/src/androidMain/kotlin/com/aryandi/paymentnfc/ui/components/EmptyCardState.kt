@@ -30,9 +30,7 @@ fun EmptyCardState(
     onAddCardClick: () -> Unit = {}
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(
             width = 2.dp,

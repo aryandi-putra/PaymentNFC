@@ -13,6 +13,7 @@ object CardMapper {
     
     fun toCardData(card: Card): CardData {
         return CardData(
+            id = card.id,
             bankName = card.bankName,
             cardType = card.cardType.toCardType(),
             backgroundColor = parseColor(card.colorHex),

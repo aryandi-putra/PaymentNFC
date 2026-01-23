@@ -6,11 +6,14 @@ import com.aryandi.paymentnfc.data.repository.HomeRepositoryImpl
 import com.aryandi.paymentnfc.domain.repository.HomeRepository
 import com.aryandi.paymentnfc.domain.usecase.AddCardUseCase
 import com.aryandi.paymentnfc.domain.usecase.AddCategoryUseCase
+import com.aryandi.paymentnfc.domain.usecase.DeleteCardUseCase
 import com.aryandi.paymentnfc.domain.usecase.DeleteCategoryUseCase
+import com.aryandi.paymentnfc.domain.usecase.GetCardByIdUseCase
 import com.aryandi.paymentnfc.domain.usecase.GetCardTransactionsUseCase
 import com.aryandi.paymentnfc.domain.usecase.GetCardsUseCase
 import com.aryandi.paymentnfc.domain.usecase.GetCategoriesUseCase
 import com.aryandi.paymentnfc.domain.usecase.GetTransactionsUseCase
+import com.aryandi.paymentnfc.domain.usecase.SetDefaultCardUseCase
 import org.koin.dsl.module
 
 val homeModule = module {
@@ -22,6 +25,9 @@ val homeModule = module {
     factory { GetCardsUseCase(get()) }
     factory { AddCardUseCase(get()) }
     factory { GetCardTransactionsUseCase() }
+    factory { GetCardByIdUseCase(get()) }
+    factory { SetDefaultCardUseCase(get()) }
+    factory { DeleteCardUseCase(get()) }
     
     // Category Use Cases
     factory { GetCategoriesUseCase(get()) }

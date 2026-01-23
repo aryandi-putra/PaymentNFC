@@ -23,7 +23,7 @@ sealed interface Screen {
     data object Cards : Screen
     
     @Serializable
-    data object CardDetail : Screen
+    data class CardDetail(val cardId: String) : Screen
     
     @Serializable
     data object AddCardType : Screen

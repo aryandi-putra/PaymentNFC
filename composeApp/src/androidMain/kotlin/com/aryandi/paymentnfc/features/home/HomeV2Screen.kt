@@ -26,7 +26,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun HomeV2Screen(
     onNavigateToCards: () -> Unit = {},
-    onNavigateToCardDetail: () -> Unit = {},
+    onNavigateToCardDetail: (cardId: String) -> Unit = {},
     onAddCard: (categoryId: String) -> Unit = {},
     viewModel: HomeV2ViewModel = koinViewModel()
 ) {
@@ -143,7 +143,7 @@ fun HomeV2Screen(
                                 stackOffset = 100.dp,
                                 isCardNumberVisible = isCardNumberVisible,
                                 onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
-                                onCardClick = { onNavigateToCardDetail() }
+                                onCardClick = { cardId -> onNavigateToCardDetail(cardId) }
                             )
                         }
                     }

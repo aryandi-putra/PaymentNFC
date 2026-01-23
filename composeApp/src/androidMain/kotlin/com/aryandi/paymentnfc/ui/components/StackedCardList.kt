@@ -35,7 +35,7 @@ import androidx.compose.ui.graphics.Color
  * @param stackOffset Vertical offset between stacked cards (default: 70.dp)
  * @param isCardNumberVisible Whether the card number is visible for the expanded card
  * @param onVisibilityToggle Callback to toggle card number visibility
- * @param onCardLongClick Callback when a card is long pressed
+ * @param onCardLongClick Callback when a card is long pressed (passes cardId for navigation)
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -46,7 +46,7 @@ fun StackedCardList(
     isCardNumberVisible: Boolean = false,
     isEditing: Boolean = false,
     onVisibilityToggle: () -> Unit = {},
-    onCardLongClick: (CardData) -> Unit = {}
+    onCardLongClick: (cardId: String) -> Unit = {}
 ) {
     val cardHeight = 200.dp
     // Add padding to top to allow pop-up animation without clipping
@@ -102,7 +102,7 @@ fun StackedCardList(
                             selectedCardIndex = if (selectedCardIndex == index) -1 else index
                         },
                         onLongClick = {
-                            onCardLongClick(card)
+                            onCardLongClick(card.id)
                         }
                     )
             ) {

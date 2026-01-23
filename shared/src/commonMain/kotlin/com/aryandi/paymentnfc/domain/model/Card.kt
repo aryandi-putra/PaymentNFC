@@ -12,7 +12,8 @@ data class Card(
     val maskedNumber: String = "$•••••",
     val cardHolder: String = "",
     val categoryId: String, // References Category.id
-    val colorHex: String = "#FF6B4A" // Default orange color
+    val colorHex: String = "#FF6B4A", // Default orange color
+    val isDefault: Boolean = false
 )
 
 enum class CardTypeModel {

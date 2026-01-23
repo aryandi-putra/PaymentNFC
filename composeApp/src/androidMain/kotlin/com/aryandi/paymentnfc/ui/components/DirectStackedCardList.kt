@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
  * @param stackOffset Vertical offset between stacked cards (default: 70.dp)
  * @param isCardNumberVisible Whether the card number is visible for the expanded card
  * @param onVisibilityToggle Callback to toggle card number visibility
- * @param onCardClick Callback when a card is clicked (navigate to detail)
+ * @param onCardClick Callback when a card is clicked (passes cardId for navigation)
  */
 @Composable
 fun DirectStackedCardList(
@@ -30,7 +30,7 @@ fun DirectStackedCardList(
     stackOffset: Dp = 70.dp,
     isCardNumberVisible: Boolean = false,
     onVisibilityToggle: () -> Unit = {},
-    onCardClick: (CardData) -> Unit = {}
+    onCardClick: (cardId: String) -> Unit = {}
 ) {
     val cardHeight = 200.dp
     val totalHeight = if (cards.isEmpty()) 0.dp else ((cards.size - 1) * stackOffset.value + cardHeight.value).dp
@@ -50,7 +50,7 @@ fun DirectStackedCardList(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null, // Disable default ripple if desired, or keep it
                         onClick = {
-                            onCardClick(card)
+                            onCardClick(card.id)
                         }
                     )
             ) {
