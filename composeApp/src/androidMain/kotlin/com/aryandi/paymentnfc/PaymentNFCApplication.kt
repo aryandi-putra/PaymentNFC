@@ -6,6 +6,7 @@ import com.aryandi.paymentnfc.config.AppConfig
 import com.aryandi.paymentnfc.config.ConfigHolder
 import com.aryandi.paymentnfc.config.Environment
 import com.aryandi.paymentnfc.config.kermitMinSeverity
+import com.aryandi.paymentnfc.di.androidDatabaseModule
 import com.aryandi.paymentnfc.di.initKoin
 import com.aryandi.paymentnfc.di.viewModelModule
 import com.aryandi.paymentnfc.logging.CrashHandler
@@ -34,8 +35,9 @@ class PaymentNFCApplication : Application() {
             androidLogger(Level.ERROR) // Log only errors in production
             androidContext(this@PaymentNFCApplication)
 
-            // Add Android-specific ViewModel module
-            modules(viewModelModule)
+            // Add Android-specific modules
+            // Note: androidDatabaseModule must be loaded first as it provides DatabaseDriverFactory
+            modules(androidDatabaseModule, viewModelModule)
         }
         
         // Set up crash handler to log uncaught exceptions

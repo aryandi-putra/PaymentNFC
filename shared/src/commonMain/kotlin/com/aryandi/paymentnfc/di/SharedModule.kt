@@ -18,6 +18,7 @@ fun initKoin(config: KoinAppDeclaration? = null) {
 val sharedModule: List<Module> = listOf(
     loggingModule,
     networkModule,
+    databaseModule,
     authModule,
     homeModule
 )

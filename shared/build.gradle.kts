@@ -1,16 +1,17 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.mokkery)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
     androidTarget {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "17"
+            }
         }
     }
     
@@ -46,16 +47,24 @@ kotlin {
             
             // Kermit
             implementation(libs.kermit)
+            
+            // SQLDelight
+            implementation(libs.sqldelight.runtime)
+            implementation(libs.sqldelight.coroutines)
         }
         
         androidMain.dependencies {
             // Platform-specific Ktor client for Android
             implementation(libs.ktor.client.android)
+            // SQLDelight Android Driver
+            implementation(libs.sqldelight.android.driver)
         }
 
         iosMain.dependencies {
             // Platform-specific Ktor client for iOS
             implementation(libs.ktor.client.darwin)
+            // SQLDelight Native Driver for iOS
+            implementation(libs.sqldelight.native.driver)
         }
         
         commonTest.dependencies {
@@ -81,6 +90,14 @@ android {
     testOptions {
         unitTests.all {
             it.useJUnitPlatform()
+        }
+    }
+}
+
+sqldelight {
+    databases {
+        create("PaymentNFCDatabase") {
+            packageName.set("com.aryandi.paymentnfc.database")
         }
     }
 }
