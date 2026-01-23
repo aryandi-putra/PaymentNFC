@@ -17,7 +17,7 @@ import com.aryandi.paymentnfc.features.register.SignUpScreen
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    startDestination: Screen = Screen.Landing,
+    startDestination: Screen = Screen.Home(userId = "test"),
 ) {
     NavHost(
         navController = navController,

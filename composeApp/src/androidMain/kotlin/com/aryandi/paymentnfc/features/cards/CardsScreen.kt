@@ -37,7 +37,7 @@ fun CardsScreen(
     onNavigateToHome: () -> Unit = {},
     onNavigateToCardDetail: () -> Unit = {}
 ) {
-    var isCardNumberVisible by remember { mutableStateOf(false) }
+    var isCardNumberVisible by remember { mutableStateOf(true) }
     
     val debitCreditCards = remember {
         listOf(
@@ -45,24 +45,36 @@ fun CardsScreen(
                 bankName = "NiceBank",
                 cardType = CardType.MASTERCARD,
                 backgroundColor = AppColors.CardGreen,
+                cardNumber = "**** **** **** 1234",
+                maskedNumber = "$•••••",
+                cardHolder = "Alexander Parra",
                 isExpanded = false
             ),
             CardData(
                 bankName = "AriaBank",
                 cardType = CardType.VISA,
                 backgroundColor = AppColors.CardOrange,
+                cardNumber = "**** **** **** 1234",
+                maskedNumber = "$•••••",
+                cardHolder = "Alexander Parra",
                 isExpanded = false
             ),
             CardData(
                 bankName = "AriaBank",
                 cardType = CardType.MASTERCARD,
                 backgroundColor = AppColors.CardYellow,
+                cardNumber = "**** **** **** 1234",
+                maskedNumber = "$•••••",
+                cardHolder = "Alexander Parra",
                 isExpanded = false
             ),
             CardData(
                 bankName = "WeBank",
                 cardType = CardType.VISA,
                 backgroundColor = AppColors.CardOlive,
+                cardNumber = "**** **** **** 1234",
+                maskedNumber = "$•••••",
+                cardHolder = "Alexander Parra",
                 isExpanded = false
             ),
             CardData(

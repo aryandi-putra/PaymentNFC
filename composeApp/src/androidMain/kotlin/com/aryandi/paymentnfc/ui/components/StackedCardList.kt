@@ -25,6 +25,7 @@ import androidx.compose.foundation.combinedClickable
 /**
  * Stacked Card List Component
  * Renders a list of cards in a vertical stack layout with pop-up animation on click.
+ * All cards start at the bottom position by default. Click to pop up, click again to return.
  * 
  * @param cards List of CardData to display
  * @param stackOffset Vertical offset between stacked cards (default: 70.dp)
@@ -47,9 +48,9 @@ fun StackedCardList(
     val popUpHeight = 30.dp
     val totalHeight = if (cards.isEmpty()) 0.dp else ((cards.size - 1) * stackOffset.value + cardHeight.value + popUpHeight.value).dp
     
-    // Initialize with the first expanded card index, if any
+    // Initialize with no card selected (all cards at bottom)
     var selectedCardIndex by remember(cards) { 
-        mutableIntStateOf(cards.indexOfFirst { it.isExpanded }) 
+        mutableIntStateOf(-1) 
     }
 
     Box(
