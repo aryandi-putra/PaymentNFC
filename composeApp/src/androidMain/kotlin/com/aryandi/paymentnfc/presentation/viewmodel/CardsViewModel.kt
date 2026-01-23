@@ -6,6 +6,7 @@ import com.aryandi.paymentnfc.domain.model.Card
 import com.aryandi.paymentnfc.domain.model.Category
 import com.aryandi.paymentnfc.domain.repository.CardRepository
 import com.aryandi.paymentnfc.domain.usecase.AddCategoryUseCase
+import com.aryandi.paymentnfc.domain.usecase.DeleteCardUseCase
 import com.aryandi.paymentnfc.domain.usecase.DeleteCategoryUseCase
 import com.aryandi.paymentnfc.domain.usecase.GetCardsUseCase
 import com.aryandi.paymentnfc.domain.usecase.GetCategoriesUseCase
@@ -66,7 +67,7 @@ class CardsViewModel(
     private val getCategoriesUseCase: GetCategoriesUseCase,
     private val addCategoryUseCase: AddCategoryUseCase,
     private val deleteCategoryUseCase: DeleteCategoryUseCase,
-    private val cardRepository: CardRepository
+    private val deleteCardUseCase: DeleteCardUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CardsUiState())
@@ -193,10 +194,8 @@ class CardsViewModel(
 
     private fun deleteCard(cardId: String) {
         viewModelScope.launch {
-            try {
-                cardRepository.deleteCard(cardId)
-            } catch (e: Exception) {
-                _uiState.update { it.copy(error = e.message) }
+            deleteCardUseCase(cardId).onFailure { error ->
+                _uiState.update { it.copy(error = error.message) }
             }
         }
     }

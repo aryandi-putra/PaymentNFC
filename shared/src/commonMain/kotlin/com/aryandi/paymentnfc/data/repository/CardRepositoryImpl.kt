@@ -1,6 +1,7 @@
 package com.aryandi.paymentnfc.data.repository
 
 import com.aryandi.paymentnfc.data.local.CardLocalDataSource
+import com.aryandi.paymentnfc.data.mapper.CardMapper
 import com.aryandi.paymentnfc.database.CardEntity
 import com.aryandi.paymentnfc.domain.model.Card
 import com.aryandi.paymentnfc.domain.model.CardTypeModel
@@ -20,7 +21,7 @@ class CardRepositoryImpl(
     
     override fun getAllCards(): Flow<List<Card>> {
         return localDataSource.getAllCards().map { entities ->
-            entities.map { it.toDomainModel() }
+            entities.map { CardMapper.toDomain(it) }
         }
     }
     
@@ -32,7 +33,7 @@ class CardRepositoryImpl(
         // Create flows for each category
         val categoryFlows = categories.map { category ->
             localDataSource.getCardsByCategoryId(category.id).map { entities ->
-                category.id to entities.map { it.toDomainModel() }
+                category.id to entities.map { CardMapper.toDomain(it) }
             }
         }
         
@@ -44,21 +45,21 @@ class CardRepositoryImpl(
     
     override fun getCardsByCategoryId(categoryId: String): Flow<List<Card>> {
         return localDataSource.getCardsByCategoryId(categoryId).map { entities ->
-            entities.map { it.toDomainModel() }
+            entities.map { CardMapper.toDomain(it) }
         }
     }
     
     override suspend fun getCardById(id: String): Card? {
-        return localDataSource.getCardById(id)?.toDomainModel()
+        return localDataSource.getCardById(id)?.let { CardMapper.toDomain(it) }
     }
     
     override suspend fun saveCard(card: Card) {
-        localDataSource.insertCard(card.toEntity())
+        localDataSource.insertCard(CardMapper.toEntity(card))
     }
     
     override suspend fun saveCards(cards: List<Card>) {
         cards.forEach { card ->
-            localDataSource.insertCard(card.toEntity())
+            localDataSource.insertCard(CardMapper.toEntity(card))
         }
     }
     
@@ -79,35 +80,6 @@ class CardRepositoryImpl(
     }
     
     override suspend fun getDefaultCard(): Card? {
-        return localDataSource.getDefaultCard()?.toDomainModel()
-    }
-    
-    // Extension functions for mapping
-    private fun CardEntity.toDomainModel(): Card {
-        return Card(
-            id = id,
-            bankName = bankName,
-            cardType = CardTypeModel.valueOf(cardType),
-            cardNumber = cardNumber,
-            maskedNumber = maskedNumber,
-            cardHolder = cardHolder,
-            categoryId = categoryId,
-            colorHex = colorHex,
-            isDefault = isDefault == 1L
-        )
-    }
-    
-    private fun Card.toEntity(): CardEntity {
-        return CardEntity(
-            id = id,
-            bankName = bankName,
-            cardType = cardType.name,
-            cardNumber = cardNumber,
-            maskedNumber = maskedNumber,
-            cardHolder = cardHolder,
-            categoryId = categoryId,
-            colorHex = colorHex,
-            isDefault = if (isDefault) 1L else 0L
-        )
+        return localDataSource.getDefaultCard()?.let { CardMapper.toDomain(it) }
     }
 }

@@ -1,7 +1,7 @@
 package com.aryandi.paymentnfc.data.repository
 
 import com.aryandi.paymentnfc.data.dto.TransactionDto
-import com.aryandi.paymentnfc.data.network.HomeApiService
+import com.aryandi.paymentnfc.data.network.TransactionApiService
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
@@ -14,10 +14,10 @@ import kotlinx.coroutines.test.runTest
 
 class HomeRepositoryImplTest : BehaviorSpec({
 
-    val apiService = mock<HomeApiService>()
-    val repository = HomeRepositoryImpl(apiService)
+    val apiService = mock<TransactionApiService>()
+    val repository = TransactionRepositoryImpl(apiService)
 
-    Given("a HomeRepository") {
+    Given("a TransactionRepository") {
         When("getTransactions is successful") {
             runTest {
                 val dtos = listOf(

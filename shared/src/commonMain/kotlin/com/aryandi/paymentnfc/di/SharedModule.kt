@@ -20,5 +20,6 @@ val sharedModule: List<Module> = listOf(
     networkModule,
     databaseModule,
     authModule,
-    homeModule
+    transactionModule,
+    cardModule
 )

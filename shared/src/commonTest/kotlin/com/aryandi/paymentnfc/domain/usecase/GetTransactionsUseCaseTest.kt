@@ -1,7 +1,7 @@
 package com.aryandi.paymentnfc.domain.usecase
 
 import com.aryandi.paymentnfc.domain.model.Transaction
-import com.aryandi.paymentnfc.domain.repository.HomeRepository
+import com.aryandi.paymentnfc.domain.repository.TransactionRepository
 import dev.mokkery.answering.returns
 import dev.mokkery.everySuspend
 import dev.mokkery.mock
@@ -10,7 +10,7 @@ import io.kotest.matchers.result.shouldBeSuccess
 import io.kotest.matchers.shouldBe
 
 class GetTransactionsUseCaseTest : BehaviorSpec({
-    val repository = mock<HomeRepository>()
+    val repository = mock<TransactionRepository>()
     val useCase = GetTransactionsUseCase(repository)
 
     Given("a GetTransactionsUseCase") {

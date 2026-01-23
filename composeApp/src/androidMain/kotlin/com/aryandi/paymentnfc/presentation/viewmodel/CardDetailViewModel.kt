@@ -40,7 +40,6 @@ data class CardDetailUiState(
 )
 
 class CardDetailViewModel(
-    private val savedStateHandle: SavedStateHandle,
     private val getCardByIdUseCase: GetCardByIdUseCase,
     private val getCardTransactionsUseCase: GetCardTransactionsUseCase,
     private val setDefaultCardUseCase: SetDefaultCardUseCase,

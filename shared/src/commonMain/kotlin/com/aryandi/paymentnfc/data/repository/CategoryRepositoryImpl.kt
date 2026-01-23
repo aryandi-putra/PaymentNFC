@@ -1,6 +1,7 @@
 package com.aryandi.paymentnfc.data.repository
 
 import com.aryandi.paymentnfc.data.local.CategoryLocalDataSource
+import com.aryandi.paymentnfc.data.mapper.CategoryMapper
 import com.aryandi.paymentnfc.database.CategoryEntity
 import com.aryandi.paymentnfc.domain.model.Category
 import com.aryandi.paymentnfc.domain.repository.CategoryRepository
@@ -17,21 +18,21 @@ class CategoryRepositoryImpl(
     
     override fun getAllCategories(): Flow<List<Category>> {
         return localDataSource.getAllCategories().map { entities ->
-            entities.map { it.toDomainModel() }
+            entities.map { CategoryMapper.toDomain(it) }
         }
     }
     
     override suspend fun getCategoryById(id: String): Category? {
-        return localDataSource.getCategoryById(id)?.toDomainModel()
+        return localDataSource.getCategoryById(id)?.let { CategoryMapper.toDomain(it) }
     }
     
     override suspend fun saveCategory(category: Category) {
-        localDataSource.insertCategory(category.toEntity())
+        localDataSource.insertCategory(CategoryMapper.toEntity(category))
     }
     
     override suspend fun saveCategories(categories: List<Category>) {
         categories.forEach { category ->
-            localDataSource.insertCategory(category.toEntity())
+            localDataSource.insertCategory(CategoryMapper.toEntity(category))
         }
     }
     
@@ -53,26 +54,5 @@ class CategoryRepositoryImpl(
     override suspend fun getNextSortOrder(): Int {
         val categories = localDataSource.getAllCategories().first()
         return if (categories.isEmpty()) 0 else categories.maxOf { it.sortOrder.toInt() } + 1
-    }
-    
-    // Extension functions for mapping
-    private fun CategoryEntity.toDomainModel(): Category {
-        return Category(
-            id = id,
-            name = name,
-            displayName = displayName,
-            iconName = iconName,
-            sortOrder = sortOrder.toInt()
-        )
-    }
-    
-    private fun Category.toEntity(): CategoryEntity {
-        return CategoryEntity(
-            id = id,
-            name = name,
-            displayName = displayName,
-            iconName = iconName,
-            sortOrder = sortOrder.toLong()
-        )
     }
 }
