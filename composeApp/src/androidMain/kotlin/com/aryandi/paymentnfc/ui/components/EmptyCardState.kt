@@ -1,18 +1,20 @@
 package com.aryandi.paymentnfc.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -29,97 +31,121 @@ fun EmptyCardState(
     modifier: Modifier = Modifier,
     onAddCardClick: () -> Unit = {}
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(
-            width = 2.dp,
-            color = AppColors.TextGray.copy(alpha = 0.3f)
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
-        )
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .height(320.dp)
+            .drawBehind {
+                val stroke = Stroke(
+                    width = 2.dp.toPx(),
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(15f, 15f), 0f)
+                )
+                drawRoundRect(
+                    color = Color.LightGray.copy(alpha = 0.5f),
+                    style = stroke,
+                    cornerRadius = CornerRadius(24.dp.toPx())
+                )
+            },
+        contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 48.dp, horizontal = 32.dp),
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Icon Container
+            // 3D Receipt/Document Illustration
             Box(
-                modifier = Modifier.size(80.dp),
+                modifier = Modifier.size(120.dp),
                 contentAlignment = Alignment.Center
             ) {
-                // Card/Receipt Icon
-                Icon(
-                    imageVector = Icons.Outlined.CreditCard,
-                    contentDescription = null,
-                    modifier = Modifier.size(64.dp),
-                    tint = AppColors.PrimaryBlue.copy(alpha = 0.6f)
-                )
-                
-                // Error/Close Badge
+                // Main Document Body (Teal/Mint)
                 Box(
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(width = 70.dp, height = 90.dp)
+                        .background(Color(0xFF90C2BC), RoundedCornerShape(8.dp))
+                ) {
+                    Column(
+                        modifier = Modifier.padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        repeat(3) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(4.dp)
+                                    .background(Color.White.copy(alpha = 0.5f), RoundedCornerShape(2.dp))
+                            )
+                        }
+                    }
+                }
+                
+                // Red 'X' Badge
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
                         .align(Alignment.BottomEnd)
-                        .background(
-                            color = Color(0xFFE57373),
-                            shape = CircleShape
-                        ),
+                        .offset(x = (-8).dp, y = (-8).dp)
+                        .background(Color(0xFFF28B82).copy(alpha = 0.2f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                        tint = Color.White
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(38.dp)
+                            .background(Color(0xFFF28B82), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = Color.White
+                        )
+                    }
                 }
             }
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            // Title
             Text(
                 text = "Add your first card",
                 fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Bold,
                 color = AppColors.TextPrimary,
                 textAlign = TextAlign.Center
             )
             
             Spacer(modifier = Modifier.height(8.dp))
             
-            // Subtitle
             Text(
                 text = "Store member, credit, or debit card.",
                 fontSize = 14.sp,
-                color = AppColors.TextGray,
+                color = AppColors.TextSecondary,
                 textAlign = TextAlign.Center
             )
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            // Add Card Button
             Button(
                 onClick = onAddCardClick,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = AppColors.PrimaryBlue
+                    containerColor = Color(0xFF3A8375)
                 ),
                 shape = RoundedCornerShape(24.dp),
-                modifier = Modifier.height(48.dp)
+                modifier = Modifier.height(48.dp).padding(horizontal = 16.dp)
             ) {
                 Text(
                     text = "Add your first card",
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
                 )
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "→",
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    color = Color.White
                 )
             }
         }

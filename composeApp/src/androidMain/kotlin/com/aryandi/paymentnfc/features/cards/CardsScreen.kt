@@ -206,9 +206,9 @@ fun CardsScreen(
                 }
             }
             
-            // Dynamic Categories with Cards - only show categories that have cards
+            // Dynamic Categories with Cards - show all categories, empty ones show dashed onboarding box
             items(
-                items = uiState.categoriesWithCards.filter { it.cards.isNotEmpty() },
+                items = uiState.categoriesWithCards,
                 key = { it.category.id }
             ) { categoryWithCards ->
                 CategorySection(
