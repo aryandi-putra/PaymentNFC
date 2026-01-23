@@ -21,6 +21,10 @@ import androidx.compose.ui.zIndex
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
 
 /**
  * Stacked Card List Component
@@ -40,6 +44,7 @@ fun StackedCardList(
     modifier: Modifier = Modifier,
     stackOffset: Dp = 70.dp,
     isCardNumberVisible: Boolean = false,
+    isEditing: Boolean = false,
     onVisibilityToggle: () -> Unit = {},
     onCardLongClick: (CardData) -> Unit = {}
 ) {
@@ -51,6 +56,13 @@ fun StackedCardList(
     // Initialize with no card selected (all cards at bottom)
     var selectedCardIndex by remember(cards) { 
         mutableIntStateOf(-1) 
+    }
+
+    // Reset selection when entering edit mode
+    LaunchedEffect(isEditing) {
+        if (isEditing) {
+            selectedCardIndex = -1
+        }
     }
 
     Box(
@@ -72,12 +84,18 @@ fun StackedCardList(
                 targetValue = targetOffsetY,
                 animationSpec = spring()
             )
+            
+            // Calculate z-index to ensure correct stacking order
+            // Match Home Screen: Last card (highest index) is on top
+            val baseZIndex = index.toFloat()
+            val zIndex = if (isSelected) cards.size.toFloat() + 1f else baseZIndex
 
             Box(
                 modifier = Modifier
                     .offset(y = animatedOffsetY)
-                    .zIndex(if (isSelected) 1f else 0f) // Bring to front visually if needed
+                    .zIndex(zIndex) 
                     .combinedClickable(
+                        enabled = !isEditing,
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null, // Disable ripple for cleaner custom animation
                         onClick = {
@@ -91,9 +109,17 @@ fun StackedCardList(
                 CreditCard(
                     cardData = card,
                     isVisible = isCardNumberVisible,
-                    isExpanded = isSelected,
+                    isExpanded = card.isExpanded || isSelected,
                     onVisibilityToggle = onVisibilityToggle
                 )
+                
+                if (isEditing) {
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(Color.Black.copy(alpha = 0.3f), RoundedCornerShape(20.dp))
+                    )
+                }
             }
         }
     }

@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,7 +32,10 @@ fun SectionHeader(
     modifier: Modifier = Modifier,
     actionText: String? = null,
     showAddIcon: Boolean = true,
-    onActionClick: () -> Unit = {}
+    isEditing: Boolean = false,
+    onActionClick: () -> Unit = {},
+    onEditClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {}
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -43,7 +49,26 @@ fun SectionHeader(
             color = Color.Black
         )
         
-        if (actionText != null) {
+        if (isEditing) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onEditClick) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Category",
+                        tint = AppColors.PrimaryBlue,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete Category",
+                        tint = Color.Red,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+        } else if (actionText != null) {
             TextButton(onClick = onActionClick) {
                 if (showAddIcon) {
                     Icon(

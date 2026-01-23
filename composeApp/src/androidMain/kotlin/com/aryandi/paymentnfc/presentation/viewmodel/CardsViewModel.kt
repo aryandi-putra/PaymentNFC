@@ -18,6 +18,13 @@ import kotlinx.coroutines.launch
 sealed interface CardsIntent {
     data object LoadCards : CardsIntent
     data object Refresh : CardsIntent
+    data object ToggleEditMode : CardsIntent
+    data class DeleteCategory(val category: CardCategory) : CardsIntent
+
+    // New Intents
+    data class AddCard(val card: Card) : CardsIntent
+    data class UpdateCard(val card: Card) : CardsIntent
+    data class DeleteCard(val cardId: String) : CardsIntent
 }
 
 data class CardsUiState(
@@ -25,7 +32,8 @@ data class CardsUiState(
     val memberCards: List<Card> = emptyList(),
     val eMoneyCards: List<Card> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val isEditing: Boolean = false
 )
 
 class CardsViewModel(
@@ -43,6 +51,11 @@ class CardsViewModel(
         when (intent) {
             CardsIntent.LoadCards -> loadCards()
             CardsIntent.Refresh -> loadCards()
+            CardsIntent.ToggleEditMode -> toggleEditMode()
+            is CardsIntent.DeleteCategory -> deleteCategory(intent.category)
+            is CardsIntent.AddCard -> TODO()
+            is CardsIntent.DeleteCard -> TODO()
+            is CardsIntent.UpdateCard -> TODO()
         }
     }
 
@@ -72,6 +85,20 @@ class CardsViewModel(
                     }
                 }
             )
+        }
+    }
+
+    private fun toggleEditMode() {
+        _uiState.update { it.copy(isEditing = !it.isEditing) }
+    }
+
+    private fun deleteCategory(category: CardCategory) {
+        _uiState.update { state ->
+            when (category) {
+                CardCategory.RETAIL_SHOPPING -> state.copy(debitCreditCards = emptyList())
+                CardCategory.MEMBER_CARD -> state.copy(memberCards = emptyList())
+                CardCategory.ELECTRONIC_MONEY -> state.copy(eMoneyCards = emptyList())
+            }
         }
     }
 }

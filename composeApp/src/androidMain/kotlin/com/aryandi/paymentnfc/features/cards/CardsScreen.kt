@@ -19,6 +19,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aryandi.paymentnfc.presentation.viewmodel.CardsViewModel
+import com.aryandi.paymentnfc.domain.model.CardCategory
+import com.aryandi.paymentnfc.presentation.viewmodel.CardsIntent
 import com.aryandi.paymentnfc.ui.components.AppBottomNavBar
 import com.aryandi.paymentnfc.ui.components.BottomNavTab
 import com.aryandi.paymentnfc.ui.components.CardData
@@ -68,22 +70,44 @@ fun CardsScreen(
             TopAppBar(
                 title = { },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.Black
-                        )
+                    if (uiState.isEditing) {
+                        TextButton(onClick = { viewModel.onIntent(CardsIntent.ToggleEditMode) }) {
+                            Text(
+                                text = "Cancel",
+                                color = AppColors.TextPrimary,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back",
+                                tint = Color.Black
+                            )
+                        }
                     }
                 },
                 actions = {
-                    TextButton(onClick = onEdit) {
-                        Text(
-                            text = "Edit",
-                            color = AppColors.PrimaryBlue,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium
-                        )
+                    if (uiState.isEditing) {
+                        TextButton(onClick = { viewModel.onIntent(CardsIntent.ToggleEditMode) }) {
+                            Text(
+                                text = "Done",
+                                color = AppColors.TextPrimary,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    } else {
+                        TextButton(onClick = { viewModel.onIntent(CardsIntent.ToggleEditMode) }) {
+                            Text(
+                                text = "Edit",
+                                color = AppColors.PrimaryBlue,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -140,7 +164,9 @@ fun CardsScreen(
                 SectionHeader(
                     title = "Debit/Credit Card", 
                     actionText = "Add Card",
-                    onActionClick = onAddCard
+                    isEditing = uiState.isEditing,
+                    onActionClick = onAddCard,
+                    onDeleteClick = { viewModel.onIntent(CardsIntent.DeleteCategory(CardCategory.RETAIL_SHOPPING)) }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -150,6 +176,7 @@ fun CardsScreen(
                 StackedCardList(
                     cards = debitCreditCards,
                     isCardNumberVisible = isCardNumberVisible,
+                    isEditing = uiState.isEditing,
                     onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
                     onCardLongClick = { onNavigateToCardDetail() }
                 )
@@ -161,7 +188,9 @@ fun CardsScreen(
                 SectionHeader(
                     title = "Member Card", 
                     actionText = "Add Card",
-                    onActionClick = onAddCard
+                    isEditing = uiState.isEditing,
+                    onActionClick = onAddCard,
+                    onDeleteClick = { viewModel.onIntent(CardsIntent.DeleteCategory(CardCategory.MEMBER_CARD)) }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -171,6 +200,7 @@ fun CardsScreen(
                 StackedCardList(
                     cards = memberCards,
                     isCardNumberVisible = isCardNumberVisible,
+                    isEditing = uiState.isEditing,
                     onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
                     onCardLongClick = { onNavigateToCardDetail() }
                 )
@@ -182,7 +212,9 @@ fun CardsScreen(
                 SectionHeader(
                     title = "Electronic Money Card", 
                     actionText = "Add Card",
-                    onActionClick = onAddCard
+                    isEditing = uiState.isEditing,
+                    onActionClick = onAddCard,
+                    onDeleteClick = { viewModel.onIntent(CardsIntent.DeleteCategory(CardCategory.ELECTRONIC_MONEY)) }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -192,6 +224,7 @@ fun CardsScreen(
                 StackedCardList(
                     cards = electronicMoneyCards,
                     isCardNumberVisible = isCardNumberVisible,
+                    isEditing = uiState.isEditing,
                     onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
                     onCardLongClick = { onNavigateToCardDetail() }
                 )
