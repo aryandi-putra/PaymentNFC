@@ -5,6 +5,7 @@ import com.aryandi.paymentnfc.data.network.HomeApiServiceImpl
 import com.aryandi.paymentnfc.data.repository.HomeRepositoryImpl
 import com.aryandi.paymentnfc.domain.repository.HomeRepository
 import com.aryandi.paymentnfc.domain.usecase.AddCardUseCase
+import com.aryandi.paymentnfc.domain.usecase.GetCardTransactionsUseCase
 import com.aryandi.paymentnfc.domain.usecase.GetCardsUseCase
 import com.aryandi.paymentnfc.domain.usecase.GetTransactionsUseCase
 import org.koin.dsl.module
@@ -17,4 +18,5 @@ val homeModule = module {
     factory { GetTransactionsUseCase(get()) }
     factory { GetCardsUseCase() }
     factory { AddCardUseCase() }
+    factory { GetCardTransactionsUseCase() }
 }
