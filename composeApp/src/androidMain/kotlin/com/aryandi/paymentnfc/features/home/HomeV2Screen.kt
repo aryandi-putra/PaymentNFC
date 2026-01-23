@@ -32,8 +32,16 @@ fun HomeV2Screen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     
-    // Dynamic page count based on categories
-    val pageCount = maxOf(uiState.categoriesWithCards.size, 1)
+    // Filter categories to only include those that have cards
+    val categoriesWithCards = remember(uiState.categoriesWithCards) {
+        uiState.categoriesWithCards.filter { it.cards.isNotEmpty() }
+    }
+    
+    // Check if there are any cards at all across all categories
+    val hasAnyCards = categoriesWithCards.isNotEmpty()
+    
+    // Dynamic page count based on non-empty categories
+    val pageCount = maxOf(categoriesWithCards.size, 1)
     val pagerState = rememberPagerState(pageCount = { pageCount })
 
     Scaffold(
@@ -51,8 +59,11 @@ fun HomeV2Screen(
                     IconButton(
                         onClick = { 
                             // Add card to current category
-                            uiState.categoriesWithCards.getOrNull(pagerState.currentPage)?.category?.id?.let {
+                            categoriesWithCards.getOrNull(pagerState.currentPage)?.category?.id?.let {
                                 onAddCard(it)
+                            } ?: run {
+                                // Default to first available category if none in pager
+                                uiState.categoriesWithCards.firstOrNull()?.category?.id?.let { onAddCard(it) }
                             }
                         },
                         modifier = Modifier
@@ -96,8 +107,8 @@ fun HomeV2Screen(
                 ) {
                     CircularProgressIndicator(color = AppColors.PrimaryBlue)
                 }
-            } else if (uiState.categoriesWithCards.isEmpty()) {
-                // Empty state when no categories exist
+            } else if (!hasAnyCards) {
+                // Empty state when no cards exist across any category
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -105,7 +116,11 @@ fun HomeV2Screen(
                     contentAlignment = Alignment.Center
                 ) {
                     EmptyCardState(
-                        onAddCardClick = { onNavigateToCards() }
+                        onAddCardClick = { 
+                            // Default to first category or navigate to cards screen
+                            val firstCategoryId = uiState.categoriesWithCards.firstOrNull()?.category?.id
+                            if (firstCategoryId != null) onAddCard(firstCategoryId) else onNavigateToCards()
+                        }
                     )
                 }
             } else {
@@ -118,7 +133,7 @@ fun HomeV2Screen(
                     pageSpacing = 16.dp,
                     verticalAlignment = Alignment.Top
                 ) { page ->
-                    val categoryWithCards = uiState.categoriesWithCards.getOrNull(page)
+                    val categoryWithCards = categoriesWithCards.getOrNull(page)
                     
                     Column {
                         SectionHeaderWithViewAll(
@@ -129,31 +144,23 @@ fun HomeV2Screen(
                         
                         val cards = categoryWithCards?.cards ?: emptyList()
                         
-                        if (cards.isEmpty()) {
-                            EmptyCardState(
-                                onAddCardClick = { 
-                                    categoryWithCards?.category?.id?.let { onAddCard(it) }
-                                }
-                            )
-                        } else {
-                            var isCardNumberVisible by remember { mutableStateOf(false) }
-                            
-                            DirectStackedCardList(
-                                cards = cards,
-                                stackOffset = 100.dp,
-                                isCardNumberVisible = isCardNumberVisible,
-                                onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
-                                onCardClick = { cardId -> onNavigateToCardDetail(cardId) }
-                            )
-                        }
+                        var isCardNumberVisible by remember { mutableStateOf(false) }
+                        
+                        DirectStackedCardList(
+                            cards = cards,
+                            stackOffset = 100.dp,
+                            isCardNumberVisible = isCardNumberVisible,
+                            onVisibilityToggle = { isCardNumberVisible = !isCardNumberVisible },
+                            onCardClick = { cardId -> onNavigateToCardDetail(cardId) }
+                        )
                     }
                 }
             }
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            // Pager Indicators - only show if there are categories
-            if (uiState.categoriesWithCards.isNotEmpty()) {
+            // Pager Indicators - only show if there are multiple non-empty categories
+            if (categoriesWithCards.size > 1) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically

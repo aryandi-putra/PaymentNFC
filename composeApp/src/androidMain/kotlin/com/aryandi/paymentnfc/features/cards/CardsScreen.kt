@@ -27,6 +27,7 @@ import com.aryandi.paymentnfc.ui.components.AppBottomNavBar
 import com.aryandi.paymentnfc.ui.components.BottomNavTab
 import com.aryandi.paymentnfc.ui.components.CategoryCreatedDialog
 import com.aryandi.paymentnfc.ui.components.EmptyCardState
+import com.aryandi.paymentnfc.ui.components.HowToAddCardMenu
 import com.aryandi.paymentnfc.ui.components.SectionHeader
 import com.aryandi.paymentnfc.ui.components.StackedCardList
 import com.aryandi.paymentnfc.ui.mapper.CardMapper
@@ -61,6 +62,11 @@ fun CardsScreen(
         isVisible = uiState.showCategoryCreatedDialog,
         onDismiss = { viewModel.onIntent(CardsIntent.DismissCategoryCreatedDialog) }
     )
+    
+    // Check if there are any cards saved at all
+    val hasAnyCards = remember(uiState.categoriesWithCards) {
+        uiState.categoriesWithCards.any { it.cards.isNotEmpty() }
+    }
     
     Scaffold(
         topBar = {
@@ -165,6 +171,27 @@ fun CardsScreen(
                 Spacer(modifier = Modifier.height(24.dp))
             }
             
+            // If no cards are saved, show "How to add card" menu
+            if (!uiState.isLoading && !hasAnyCards) {
+                item {
+                    HowToAddCardMenu(
+                        onDebitCreditClick = { 
+                            // Default to debit_credit category if it exists
+                            uiState.categoriesWithCards.find { 
+                                it.category.id == "debit_credit" 
+                            }?.category?.id?.let { onAddCard(it) } ?: onAddCard("debit_credit")
+                        },
+                        onOthersClick = { 
+                            // Default to first non-debit_credit category
+                            uiState.categoriesWithCards.find { 
+                                it.category.id != "debit_credit" 
+                            }?.category?.id?.let { onAddCard(it) } ?: onAddCard("member_card")
+                        },
+                        onGotItClick = { /* No-op or dismiss onboarding */ }
+                    )
+                }
+            }
+            
             // Loading State
             if (uiState.isLoading) {
                 item {
@@ -179,9 +206,9 @@ fun CardsScreen(
                 }
             }
             
-            // Dynamic Categories with Cards
+            // Dynamic Categories with Cards - only show categories that have cards
             items(
-                items = uiState.categoriesWithCards,
+                items = uiState.categoriesWithCards.filter { it.cards.isNotEmpty() },
                 key = { it.category.id }
             ) { categoryWithCards ->
                 CategorySection(
