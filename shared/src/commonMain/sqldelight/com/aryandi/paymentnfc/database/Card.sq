@@ -1,0 +1,44 @@
+-- Card table definition
+CREATE TABLE CardEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    bankName TEXT NOT NULL,
+    cardType TEXT NOT NULL,
+    cardNumber TEXT NOT NULL DEFAULT '**** **** **** ****',
+    maskedNumber TEXT NOT NULL DEFAULT '$•••••',
+    cardHolder TEXT NOT NULL DEFAULT '',
+    categoryId TEXT NOT NULL,
+    colorHex TEXT NOT NULL DEFAULT '#FF6B4A'
+);
+
+-- Get all cards
+selectAll:
+SELECT * FROM CardEntity;
+
+-- Get cards by categoryId
+selectByCategoryId:
+SELECT * FROM CardEntity WHERE categoryId = ?;
+
+-- Get card by id
+selectById:
+SELECT * FROM CardEntity WHERE id = ?;
+
+-- Insert or replace a card
+insertCard:
+INSERT OR REPLACE INTO CardEntity (id, bankName, cardType, cardNumber, maskedNumber, cardHolder, categoryId, colorHex)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+-- Delete a card by id
+deleteById:
+DELETE FROM CardEntity WHERE id = ?;
+
+-- Delete all cards in a category
+deleteByCategoryId:
+DELETE FROM CardEntity WHERE categoryId = ?;
+
+-- Delete all cards
+deleteAll:
+DELETE FROM CardEntity;
+
+-- Count cards by categoryId
+countByCategoryId:
+SELECT COUNT(*) FROM CardEntity WHERE categoryId = ?;

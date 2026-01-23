@@ -1,0 +1,41 @@
+-- Category table definition
+CREATE TABLE CategoryEntity (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    displayName TEXT NOT NULL,
+    iconName TEXT,
+    sortOrder INTEGER NOT NULL DEFAULT 0
+);
+
+-- Get all categories
+selectAll:
+SELECT * FROM CategoryEntity ORDER BY sortOrder ASC;
+
+-- Get category by id
+selectById:
+SELECT * FROM CategoryEntity WHERE id = ?;
+
+-- Get category by name
+selectByName:
+SELECT * FROM CategoryEntity WHERE name = ?;
+
+-- Insert or replace a category
+insertCategory:
+INSERT OR REPLACE INTO CategoryEntity (id, name, displayName, iconName, sortOrder)
+VALUES (?, ?, ?, ?, ?);
+
+-- Delete a category by id
+deleteById:
+DELETE FROM CategoryEntity WHERE id = ?;
+
+-- Delete all categories
+deleteAll:
+DELETE FROM CategoryEntity;
+
+-- Update category sort order
+updateSortOrder:
+UPDATE CategoryEntity SET sortOrder = ? WHERE id = ?;
+
+-- Count all categories
+countAll:
+SELECT COUNT(*) FROM CategoryEntity;
