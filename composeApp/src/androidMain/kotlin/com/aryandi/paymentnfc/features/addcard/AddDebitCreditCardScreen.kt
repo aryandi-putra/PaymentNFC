@@ -19,8 +19,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aryandi.paymentnfc.domain.model.CardTypeModel
+import com.aryandi.paymentnfc.presentation.viewmodel.AddCardEvent
+import com.aryandi.paymentnfc.presentation.viewmodel.AddCardIntent
+import com.aryandi.paymentnfc.presentation.viewmodel.AddCardViewModel
 import com.aryandi.paymentnfc.ui.theme.AppColors
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.androidx.compose.koinViewModel
 
 /**
  * Add Debit/Credit Card Form Screen
@@ -30,12 +36,10 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Composable
 fun AddDebitCreditCardScreen(
     onBack: () -> Unit = {},
-    onSave: () -> Unit = {}
+    onSaveSuccess: () -> Unit = {},
+    viewModel: AddCardViewModel = koinViewModel()
 ) {
-    var selectedCategory by remember { mutableStateOf("") }
-    var cardNumber by remember { mutableStateOf("") }
-    var expiryDate by remember { mutableStateOf("") }
-    var cvv by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var expanded by remember { mutableStateOf(false) }
     
     val categories = listOf(
@@ -44,6 +48,15 @@ fun AddDebitCreditCardScreen(
         "American Express",
         "JCB"
     )
+    
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is AddCardEvent.Success -> onSaveSuccess()
+                is AddCardEvent.Failure -> { /* Handle error */ }
+            }
+        }
+    }
     
     Scaffold(
         topBar = {
@@ -73,20 +86,28 @@ fun AddDebitCreditCardScreen(
                     .padding(24.dp)
             ) {
                 Button(
-                    onClick = onSave,
+                    onClick = { viewModel.onIntent(AddCardIntent.Submit) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = AppColors.PrimaryBlue
                     ),
-                    shape = RoundedCornerShape(28.dp)
+                    shape = RoundedCornerShape(28.dp),
+                    enabled = !uiState.isLoading
                 ) {
-                    Text(
-                        text = "Save",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    } else {
+                        Text(
+                            text = "Save",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
             }
         }
@@ -122,7 +143,7 @@ fun AddDebitCreditCardScreen(
                 onExpandedChange = { expanded = !expanded }
             ) {
                 OutlinedTextField(
-                    value = selectedCategory,
+                    value = uiState.cardType.name,
                     onValueChange = {},
                     readOnly = true,
                     placeholder = {
@@ -156,7 +177,12 @@ fun AddDebitCreditCardScreen(
                         DropdownMenuItem(
                             text = { Text(category) },
                             onClick = {
-                                selectedCategory = category
+                                val type = when(category) {
+                                    "Visa" -> CardTypeModel.VISA
+                                    "Mastercard" -> CardTypeModel.MASTERCARD
+                                    else -> CardTypeModel.VISA
+                                }
+                                viewModel.onIntent(AddCardIntent.CardTypeChanged(type))
                                 expanded = false
                             }
                         )
@@ -168,8 +194,8 @@ fun AddDebitCreditCardScreen(
             
             // Card Number Field
             OutlinedTextField(
-                value = cardNumber,
-                onValueChange = { cardNumber = it },
+                value = uiState.cardNumber,
+                onValueChange = { viewModel.onIntent(AddCardIntent.CardNumberChanged(it)) },
                 placeholder = {
                     Text(
                         text = "Card Number",
@@ -210,9 +236,9 @@ fun AddDebitCreditCardScreen(
             ) {
                 // MM/YY Field
                 OutlinedTextField(
-                    value = expiryDate,
+                    value = uiState.expiryDate,
                     onValueChange = { 
-                        if (it.length <= 5) expiryDate = it 
+                        if (it.length <= 5) viewModel.onIntent(AddCardIntent.ExpiryDateChanged(it))
                     },
                     placeholder = {
                         Text(
@@ -231,9 +257,9 @@ fun AddDebitCreditCardScreen(
                 
                 // CVV Field
                 OutlinedTextField(
-                    value = cvv,
+                    value = uiState.cvv,
                     onValueChange = { 
-                        if (it.length <= 3) cvv = it 
+                        if (it.length <= 3) viewModel.onIntent(AddCardIntent.CvvChanged(it))
                     },
                     placeholder = {
                         Text(
@@ -248,6 +274,15 @@ fun AddDebitCreditCardScreen(
                         focusedBorderColor = AppColors.PrimaryBlue
                     ),
                     shape = RoundedCornerShape(12.dp)
+                )
+            }
+            
+            if (uiState.error != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = uiState.error!!,
+                    color = Color.Red,
+                    fontSize = 14.sp
                 )
             }
             

@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.aryandi.paymentnfc.features.addcard.AddCardTypeScreen
 import com.aryandi.paymentnfc.features.addcard.AddDebitCreditCardScreen
+import com.aryandi.paymentnfc.features.addcard.AddOthersCardScreen
 import com.aryandi.paymentnfc.features.cards.CardDetailScreen
 import com.aryandi.paymentnfc.features.cards.CardsScreen
 import com.aryandi.paymentnfc.features.home.HomeV2Screen
@@ -143,7 +144,7 @@ fun NavGraph(
                     navController.navigate(Screen.AddDebitCreditCard)
                 },
                 onSelectOthers = {
-                    // TODO: Navigate to others card screen when implemented
+                    navController.navigate(Screen.AddOthersCard)
                 }
             )
         }
@@ -153,8 +154,20 @@ fun NavGraph(
                 onBack = {
                     navController.navigateUp()
                 },
-                onSave = {
-                    // TODO: Save card and navigate back
+                onSaveSuccess = {
+                    navController.navigate(Screen.Cards) {
+                        popUpTo(Screen.Cards) { inclusive = true }
+                    }
+                }
+            )
+        }
+        
+        composable<Screen.AddOthersCard> {
+            AddOthersCardScreen(
+                onBack = {
+                    navController.navigateUp()
+                },
+                onSaveSuccess = {
                     navController.navigate(Screen.Cards) {
                         popUpTo(Screen.Cards) { inclusive = true }
                     }

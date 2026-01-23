@@ -1,5 +1,6 @@
 package com.aryandi.paymentnfc.di
 
+import com.aryandi.paymentnfc.presentation.viewmodel.AddCardViewModel
 import com.aryandi.paymentnfc.presentation.viewmodel.CardsViewModel
 import com.aryandi.paymentnfc.presentation.viewmodel.HomeV2ViewModel
 import com.aryandi.paymentnfc.presentation.viewmodel.HomeViewModel
@@ -28,4 +29,5 @@ val viewModelModule = module {
     
     // Cards ViewModels
     viewModelOf(::CardsViewModel)
+    viewModelOf(::AddCardViewModel)
 }
