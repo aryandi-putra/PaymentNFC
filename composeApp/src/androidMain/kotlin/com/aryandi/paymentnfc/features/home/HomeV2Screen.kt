@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aryandi.paymentnfc.presentation.viewmodel.HomeV2ViewModel
 import com.aryandi.paymentnfc.ui.components.*
-import com.aryandi.paymentnfc.ui.mapper.CardMapper
 import com.aryandi.paymentnfc.ui.theme.AppColors
 import org.koin.androidx.compose.koinViewModel
 
@@ -33,18 +32,10 @@ fun HomeV2Screen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState(pageCount = { 3 })
     
-    // Map domain cards to UI cards
-    val retailCards = remember(uiState.retailCards) {
-        CardMapper.toCardDataList(uiState.retailCards)
-    }
-    
-    val memberCards = remember(uiState.memberCards) {
-        CardMapper.toCardDataList(uiState.memberCards)
-    }
-    
-    val eMoneyCards = remember(uiState.eMoneyCards) {
-        CardMapper.toCardDataList(uiState.eMoneyCards)
-    }
+    // UI cards are directly available from ViewModel state
+    val retailCards = uiState.retailCards
+    val memberCards = uiState.memberCards
+    val eMoneyCards = uiState.eMoneyCards
 
     Scaffold(
         topBar = {
