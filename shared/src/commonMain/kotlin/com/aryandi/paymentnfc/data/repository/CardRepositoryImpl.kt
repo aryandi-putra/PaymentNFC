@@ -70,7 +70,9 @@ class CardRepositoryImpl(
     }
     
     override suspend fun seedInitialDataIfNeeded() {
-        // Check if database is empty and seed initial data
+        // No-op: Disabled auto-seeding for testing empty state
+        // Uncomment the code below to re-enable seeding with dummy data
+        /*
         val count = localDataSource.countByCategory(CardCategory.RETAIL_SHOPPING.name) +
                 localDataSource.countByCategory(CardCategory.MEMBER_CARD.name) +
                 localDataSource.countByCategory(CardCategory.ELECTRONIC_MONEY.name)
@@ -78,100 +80,7 @@ class CardRepositoryImpl(
         if (count == 0L) {
             seedInitialData()
         }
-    }
-    
-    private suspend fun seedInitialData() {
-        val initialCards = listOf(
-            // Debit/Credit Cards
-            Card(
-                id = "1",
-                bankName = "AriaBank",
-                cardType = CardTypeModel.VISA,
-                category = CardCategory.RETAIL_SHOPPING,
-                cardNumber = "**** **** **** 1234",
-                maskedNumber = "$125.50",
-                colorHex = "#FF6B4A"
-            ),
-            Card(
-                id = "2",
-                bankName = "AriaBank",
-                cardType = CardTypeModel.MASTERCARD,
-                category = CardCategory.RETAIL_SHOPPING,
-                cardNumber = "**** **** **** 5678",
-                maskedNumber = "$89.99",
-                colorHex = "#FFD93D"
-            ),
-            Card(
-                id = "3",
-                bankName = "WeBank",
-                cardType = CardTypeModel.VISA,
-                category = CardCategory.RETAIL_SHOPPING,
-                cardNumber = "**** **** **** 9012",
-                maskedNumber = "$1,450.00",
-                cardHolder = "Alexander Parra",
-                colorHex = "#A4B494"
-            ),
-            // Member Cards
-            Card(
-                id = "4",
-                bankName = "Alfagift",
-                cardType = CardTypeModel.MASTERCARD,
-                category = CardCategory.MEMBER_CARD,
-                cardNumber = "**** **** **** 3456",
-                maskedNumber = "350 pts",
-                colorHex = "#8B6F47"
-            ),
-            Card(
-                id = "5",
-                bankName = "IKEA",
-                cardType = CardTypeModel.VISA,
-                category = CardCategory.MEMBER_CARD,
-                cardNumber = "**** **** **** 7890",
-                maskedNumber = "850 pts",
-                colorHex = "#FFD93D"
-            ),
-            Card(
-                id = "6",
-                bankName = "Starbucks",
-                cardType = CardTypeModel.VISA,
-                category = CardCategory.MEMBER_CARD,
-                cardNumber = "**** **** **** 2468",
-                maskedNumber = "$45.50",
-                cardHolder = "Alexander Parra",
-                colorHex = "#2D5F3F"
-            ),
-            // Electronic Money Cards
-            Card(
-                id = "7",
-                bankName = "BNI Tapcash",
-                cardType = CardTypeModel.MASTERCARD,
-                category = CardCategory.ELECTRONIC_MONEY,
-                cardNumber = "**** **** **** 1357",
-                maskedNumber = "$55.00",
-                colorHex = "#FF6B4A"
-            ),
-            Card(
-                id = "8",
-                bankName = "Mandiri E-Money",
-                cardType = CardTypeModel.VISA,
-                category = CardCategory.ELECTRONIC_MONEY,
-                cardNumber = "**** **** **** 2468",
-                maskedNumber = "$120.75",
-                colorHex = "#1E3A5F"
-            ),
-            Card(
-                id = "9",
-                bankName = "Flazz BCA",
-                cardType = CardTypeModel.MASTERCARD,
-                category = CardCategory.ELECTRONIC_MONEY,
-                cardNumber = "**** **** **** 9753",
-                maskedNumber = "$200.00",
-                cardHolder = "Alexander Parra",
-                colorHex = "#4A90E2"
-            )
-        )
-        
-        saveCards(initialCards)
+        */
     }
     
     // Extension functions for mapping

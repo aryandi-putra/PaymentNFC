@@ -16,7 +16,7 @@ val homeModule = module {
     
     // Use Cases (Domain layer)
     factory { GetTransactionsUseCase(get()) }
-    factory { GetCardsUseCase(get()) }  // Now uses CardRepository from database
-    factory { AddCardUseCase() }
+    factory { GetCardsUseCase(get()) }  // Uses CardRepository from database
+    factory { AddCardUseCase(get()) }   // Uses CardRepository to save cards
     factory { GetCardTransactionsUseCase() }
 }

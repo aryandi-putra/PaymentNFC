@@ -19,10 +19,7 @@ class GetCardsUseCase(
      */
     suspend operator fun invoke(): Result<Map<CardCategory, List<Card>>> {
         return try {
-            // Seed initial data if database is empty
-            cardRepository.seedInitialDataIfNeeded()
-            
-            // Get cards grouped by category
+            // Get cards grouped by category (returns empty lists if no cards)
             val cardsMap = cardRepository.getCardsGroupedByCategory().first()
             Result.success(cardsMap)
         } catch (e: Exception) {

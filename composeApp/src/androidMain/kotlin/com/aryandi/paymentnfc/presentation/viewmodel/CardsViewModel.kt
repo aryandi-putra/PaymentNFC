@@ -4,26 +4,26 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aryandi.paymentnfc.domain.model.Card
 import com.aryandi.paymentnfc.domain.model.CardCategory
+import com.aryandi.paymentnfc.domain.repository.CardRepository
 import com.aryandi.paymentnfc.domain.usecase.GetCardsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
  * ViewModel for CardsScreen
  * Manages card data state and business logic for the Cards tab
+ * Uses reactive Flow to automatically update when cards change in database
  */
 sealed interface CardsIntent {
     data object LoadCards : CardsIntent
     data object Refresh : CardsIntent
     data object ToggleEditMode : CardsIntent
     data class DeleteCategory(val category: CardCategory) : CardsIntent
-
-    // New Intents
-    data class AddCard(val card: Card) : CardsIntent
-    data class UpdateCard(val card: Card) : CardsIntent
     data class DeleteCard(val cardId: String) : CardsIntent
 }
 
@@ -37,46 +37,37 @@ data class CardsUiState(
 )
 
 class CardsViewModel(
-    private val getCardsUseCase: GetCardsUseCase
+    private val getCardsUseCase: GetCardsUseCase,
+    private val cardRepository: CardRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CardsUiState())
     val uiState: StateFlow<CardsUiState> = _uiState.asStateFlow()
 
     init {
-        loadCards()
+        observeCards()
     }
 
     fun onIntent(intent: CardsIntent) {
         when (intent) {
-            CardsIntent.LoadCards -> loadCards()
-            CardsIntent.Refresh -> loadCards()
+            CardsIntent.LoadCards -> { /* Cards are observed reactively, no manual load needed */ }
+            CardsIntent.Refresh -> { /* Cards are observed reactively, no manual refresh needed */ }
             CardsIntent.ToggleEditMode -> toggleEditMode()
             is CardsIntent.DeleteCategory -> deleteCategory(intent.category)
-            is CardsIntent.AddCard -> TODO()
-            is CardsIntent.DeleteCard -> TODO()
-            is CardsIntent.UpdateCard -> TODO()
+            is CardsIntent.DeleteCard -> deleteCard(intent.cardId)
         }
     }
 
-    private fun loadCards() {
+    /**
+     * Observe cards from database reactively
+     * Updates automatically when cards are added, updated, or deleted
+     */
+    private fun observeCards() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            
-            val result = getCardsUseCase()
-            
-            result.fold(
-                onSuccess = { cardsMap ->
-                    _uiState.update { 
-                        it.copy(
-                            debitCreditCards = cardsMap[CardCategory.RETAIL_SHOPPING] ?: emptyList(),
-                            memberCards = cardsMap[CardCategory.MEMBER_CARD] ?: emptyList(),
-                            eMoneyCards = cardsMap[CardCategory.ELECTRONIC_MONEY] ?: emptyList(),
-                            isLoading = false
-                        ) 
-                    }
-                },
-                onFailure = { error ->
+            // Observe card changes - starts with empty state if no cards exist
+            getCardsUseCase.observeCards()
+                .onStart { _uiState.update { it.copy(isLoading = true) } }
+                .catch { error ->
                     _uiState.update { 
                         it.copy(
                             isLoading = false,
@@ -84,7 +75,17 @@ class CardsViewModel(
                         ) 
                     }
                 }
-            )
+                .collect { cardsMap ->
+                    _uiState.update { 
+                        it.copy(
+                            debitCreditCards = cardsMap[CardCategory.RETAIL_SHOPPING] ?: emptyList(),
+                            memberCards = cardsMap[CardCategory.MEMBER_CARD] ?: emptyList(),
+                            eMoneyCards = cardsMap[CardCategory.ELECTRONIC_MONEY] ?: emptyList(),
+                            isLoading = false,
+                            error = null
+                        ) 
+                    }
+                }
         }
     }
 
@@ -93,11 +94,21 @@ class CardsViewModel(
     }
 
     private fun deleteCategory(category: CardCategory) {
-        _uiState.update { state ->
-            when (category) {
-                CardCategory.RETAIL_SHOPPING -> state.copy(debitCreditCards = emptyList())
-                CardCategory.MEMBER_CARD -> state.copy(memberCards = emptyList())
-                CardCategory.ELECTRONIC_MONEY -> state.copy(eMoneyCards = emptyList())
+        viewModelScope.launch {
+            try {
+                cardRepository.deleteCardsByCategory(category)
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message) }
+            }
+        }
+    }
+
+    private fun deleteCard(cardId: String) {
+        viewModelScope.launch {
+            try {
+                cardRepository.deleteCard(cardId)
+            } catch (e: Exception) {
+                _uiState.update { it.copy(error = e.message) }
             }
         }
     }
