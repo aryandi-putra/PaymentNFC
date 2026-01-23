@@ -24,4 +24,10 @@ sealed interface Screen {
     
     @Serializable
     data object CardDetail : Screen
+    
+    @Serializable
+    data object AddCardType : Screen
+    
+    @Serializable
+    data object AddDebitCreditCard : Screen
 }

@@ -35,7 +35,8 @@ fun CardsScreen(
     onBack: () -> Unit = {},
     onEdit: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
-    onNavigateToCardDetail: () -> Unit = {}
+    onNavigateToCardDetail: () -> Unit = {},
+    onAddCard: () -> Unit = {}
 ) {
     var isCardNumberVisible by remember { mutableStateOf(true) }
     
@@ -207,7 +208,8 @@ fun CardsScreen(
                     ActionCard(
                         icon = Icons.Default.CreditCard,
                         label = "Add Card",
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        onClick = onAddCard
                     )
                     ActionCard(
                         icon = Icons.Default.Category,
@@ -223,7 +225,7 @@ fun CardsScreen(
                 SectionHeader(
                     title = "Debit/Credit Card", 
                     actionText = "Add Card",
-                    onActionClick = { }
+                    onActionClick = onAddCard
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -244,7 +246,7 @@ fun CardsScreen(
                 SectionHeader(
                     title = "Member Card", 
                     actionText = "Add Card",
-                    onActionClick = { }
+                    onActionClick = onAddCard
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -265,7 +267,7 @@ fun CardsScreen(
                 SectionHeader(
                     title = "Electronic Money Card", 
                     actionText = "Add Card",
-                    onActionClick = { }
+                    onActionClick = onAddCard
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
