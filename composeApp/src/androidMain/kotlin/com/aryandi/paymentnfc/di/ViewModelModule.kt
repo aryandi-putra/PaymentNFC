@@ -5,8 +5,8 @@ import com.aryandi.paymentnfc.presentation.viewmodel.HomeViewModel
 import com.aryandi.paymentnfc.presentation.viewmodel.LoginViewModel
 import com.aryandi.paymentnfc.presentation.viewmodel.OtpViewModel
 import com.aryandi.paymentnfc.presentation.viewmodel.RegisterViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 /**
