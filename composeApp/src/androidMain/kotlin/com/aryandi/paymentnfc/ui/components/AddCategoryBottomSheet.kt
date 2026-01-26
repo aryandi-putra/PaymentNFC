@@ -15,6 +15,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aryandi.paymentnfc.ui.theme.AppColors
+import androidx.compose.ui.res.stringResource
+import com.aryandi.paymentnfc.R
 
 /**
  * Bottom sheet dialog for adding a new category
@@ -70,7 +72,7 @@ fun AddCategoryBottomSheet(
                 
                 // Title
                 Text(
-                    text = "Add category",
+                    text = stringResource(R.string.add_category),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -84,7 +86,7 @@ fun AddCategoryBottomSheet(
                     onValueChange = { categoryName = it },
                     placeholder = {
                         Text(
-                            text = "Category Name",
+                            text = stringResource(R.string.category_name),
                             color = AppColors.TextGray
                         )
                     },
@@ -124,7 +126,7 @@ fun AddCategoryBottomSheet(
                         )
                     } else {
                         Text(
-                            text = "Save",
+                            text = stringResource(R.string.save),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -202,7 +204,7 @@ fun CategoryCreatedDialog(
                 Spacer(modifier = Modifier.height(32.dp))
 
                 Text(
-                    text = "Category Created",
+                    text = stringResource(R.string.category_created),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = AppColors.TextPrimary,
@@ -212,7 +214,7 @@ fun CategoryCreatedDialog(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "You can now use this category for\nyour cards.",
+                    text = stringResource(R.string.category_created_desc),
                     fontSize = 14.sp,
                     color = AppColors.TextSecondary,
                     textAlign = TextAlign.Center,

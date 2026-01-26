@@ -136,9 +136,10 @@ fun HomeV2Screen(
                     val categoryWithCards = categoriesWithCards.getOrNull(page)
                     
                     Column {
-                        SectionHeaderWithViewAll(
-                            title = categoryWithCards?.category?.displayName ?: "Category",
+                        SectionHeader(
+                            title = categoryWithCards?.category?.displayName ?: "",
                             modifier = Modifier.padding(bottom = 16.dp),
+                            showViewAll = true,
                             onViewAllClick = { onNavigateToCards() }
                         )
                         
@@ -181,33 +182,6 @@ fun HomeV2Screen(
             }
             
             Spacer(modifier = Modifier.height(16.dp))
-        }
-    }
-}
-
-@Composable
-fun SectionHeaderWithViewAll(
-    title: String,
-    modifier: Modifier = Modifier,
-    onViewAllClick: () -> Unit = {}
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = title,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = AppColors.TextPrimary
-        )
-        TextButton(onClick = onViewAllClick) {
-            Text(
-                text = "Show More", 
-                color = AppColors.PrimaryBlue,
-                fontSize = 14.sp
-            )
         }
     }
 }
@@ -289,9 +263,10 @@ fun HomeV2ScreenEmptyPreview() {
                         else -> "Electronic Money Card"
                     }
                     
-                    SectionHeaderWithViewAll(
+                    SectionHeader(
                         title = title,
                         modifier = Modifier.padding(bottom = 16.dp),
+                        showViewAll = true,
                         onViewAllClick = { }
                     )
                     

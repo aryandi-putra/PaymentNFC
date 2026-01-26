@@ -16,9 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.aryandi.paymentnfc.R
 import com.aryandi.paymentnfc.ui.theme.AppColors
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -81,7 +83,7 @@ fun MoreActionsBottomSheet(
                 // Set Default Payment Action
                 ActionItem(
                     icon = Icons.Default.CreditCard,
-                    title = "Set Default Payment",
+                    title = stringResource(R.string.set_as_default_payment),
                     iconBackgroundColor = AppColors.PrimaryBlue,
                     textColor = AppColors.TextPrimary,
                     onClick = {
@@ -95,7 +97,7 @@ fun MoreActionsBottomSheet(
                 // Delete Card Action
                 ActionItem(
                     icon = Icons.Default.Delete,
-                    title = "Deleted Card",
+                    title = stringResource(R.string.delete_card),
                     iconBackgroundColor = Color(0xFFE57373),
                     textColor = Color(0xFFE57373),
                     onClick = {

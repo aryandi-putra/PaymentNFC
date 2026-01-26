@@ -1,19 +1,10 @@
 package com.aryandi.paymentnfc.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,81 +13,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aryandi.paymentnfc.ui.theme.AppColors
+import androidx.compose.ui.tooling.preview.Preview
+import com.aryandi.paymentnfc.R
+import androidx.compose.ui.res.stringResource
 
 /**
- * Section Header Component - Displays a title with optional action button
+ * Unified Section Header Component with optional actions
  */
 @Composable
 fun SectionHeader(
     title: String,
     modifier: Modifier = Modifier,
     actionText: String? = null,
-    showAddIcon: Boolean = true,
-    isEditing: Boolean = false,
     onActionClick: () -> Unit = {},
-    onEditClick: () -> Unit = {},
-    onDeleteClick: () -> Unit = {}
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = title,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color.Black
-        )
-        
-        if (isEditing) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onEditClick) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit Category",
-                        tint = AppColors.PrimaryBlue,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-                IconButton(onClick = onDeleteClick) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete Category",
-                        tint = Color.Red,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
-        } else if (actionText != null) {
-            TextButton(onClick = onActionClick) {
-                if (showAddIcon) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null,
-                        tint = AppColors.PrimaryBlue,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                }
-                Text(
-                    text = actionText,
-                    color = AppColors.PrimaryBlue,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-        }
-    }
-}
-
-/**
- * Section Header with View All action - Common pattern for list headers
- */
-@Composable
-fun SectionHeaderWithViewAll(
-    title: String,
-    modifier: Modifier = Modifier,
+    isEditing: Boolean = false,
+    onDeleteClick: () -> Unit = {},
+    showViewAll: Boolean = false,
     onViewAllClick: () -> Unit = {}
 ) {
     Row(
@@ -108,10 +40,56 @@ fun SectionHeaderWithViewAll(
             text = title,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = AppColors.TextPrimary
         )
-        TextButton(onClick = onViewAllClick) {
-            Text(text = "View all", color = Color.Gray)
+        
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (isEditing) {
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete",
+                        tint = Color.Red
+                    )
+                }
+            } else if (actionText != null) {
+                TextButton(
+                    onClick = onActionClick,
+                    contentPadding = PaddingValues(0.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AddCircleOutline,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = AppColors.PrimaryBlue
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = actionText,
+                        fontSize = 14.sp,
+                        color = AppColors.PrimaryBlue,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            } else if (showViewAll) {
+                TextButton(onClick = onViewAllClick) {
+                    Text(
+                        text = stringResource(R.string.show_more),
+                        color = AppColors.PrimaryBlue,
+                        fontSize = 14.sp
+                    )
+                }
+            }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SectionHeaderPreview() {
+    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SectionHeader(title = "Categories", actionText = "Add Card")
+        SectionHeader(title = "Recent Transactions", showViewAll = true)
+        SectionHeader(title = "Editing Category", isEditing = true)
     }
 }

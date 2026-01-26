@@ -50,7 +50,7 @@ fun StackedCardList(
 ) {
     val cardHeight = 200.dp
     // Add padding to top to allow pop-up animation without clipping
-    val popUpHeight = 30.dp
+    val popUpHeight = 12.dp
     val totalHeight = if (cards.isEmpty()) 0.dp else ((cards.size - 1) * stackOffset.value + cardHeight.value + popUpHeight.value).dp
     
     // Initialize with no card selected (all cards at bottom)

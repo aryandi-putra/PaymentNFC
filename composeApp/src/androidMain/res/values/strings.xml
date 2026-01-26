@@ -1,3 +1,93 @@
 <resources>
     <string name="app_name">PaymentNFC</string>
+
+    <!-- Common -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="back">Back</string>
+    <string name="done">Done</string>
+    <string name="edit">Edit</string>
+    <string name="loading">Loading...</string>
+    <string name="search">Search</string>
+    <string name="show_more">Show More</string>
+    <string name="ok_got_it">Ok, got it!</string>
+
+    <!-- Auth -->
+    <string name="sign_in">Sign In</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="welcome_back">Welcome Back</string>
+    <string name="hello_sign_in_continue">Hello there, sign in to continue</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot your password ?</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="create_account">Create Account</string>
+    <string name="email">Email</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="have_account">Have an account? </string>
+    
+    <!-- OTP -->
+    <string name="otp_verification">OTP Verification</string>
+    <string name="verification">Verification</string>
+    <string name="verify">Verify</string>
+    <string name="verify_account">Verify your account</string>
+
+    <!-- Cards -->
+    <string name="cards">Cards</string>
+    <string name="add_card">Add Card</string>
+    <string name="add_categories">Add Categories</string>
+    <string name="delete_card">Delete Card</string>
+    <string name="card_details">Card Details</string>
+    <string name="show_card_details">Show Card Details</string>
+    <string name="more_actions">More Actions</string>
+    <string name="transactions">Transactions</string>
+    <string name="choose_category">Choose category</string>
+    <string name="add_category">Add category</string>
+    <string name="category_name">Category Name</string>
+    <string name="card_type">Card type</string>
+    <string name="card_number">Card Number</string>
+    <string name="expired_date">Expired Date</string>
+    <string name="mm_yy">MM/YY</string>
+    <string name="cvv">CVV</string>
+    <string name="cvv_3_digits">CVV 3 Digits</string>
+    <string name="recent_transactions">Recent transactions</string>
+    <string name="debit_credit_card_title">Debit or Credit Card</string>
+    <string name="debit_credit_card">Debit or Credit Card</string>
+    <string name="others_card">Others Card</string>
+    <string name="how_to_add_card">How to add card</string>
+
+    <!-- Empty States -->
+    <string name="add_your_first_card">Add your first card</string>
+    <string name="store_member_credit_debit">Store member, credit, or debit card.</string>
+
+    <!-- Dialogs -->
+    <string name="category_created">Category Created</string>
+    <string name="category_created_desc">You can now use this category for\nyour cards.</string>
+    <string name="deleted_card">Deleted Card</string>
+    <string name="delete_confirmation">Are you sure you want to\ndelete this card?</string>
+    <string name="card_deleted_title">The Card Has Been Deleted</string>
+    <string name="card_deleted_desc">The card has been successfully deleted and is no longer active.</string>
+    <string name="default_payment_updated">Default Payment Updated</string>
+    <string name="default_payment_desc">Your payment default has been updated successfully.</string>
+    <string name="set_as_default_payment">Set as Default Payment</string>
+    <string name="set_default_confirmation">Would you like to set this card\nas your primary payment method?</string>
+    <string name="go_back">Go Back</string>
+    <string name="continue_text">Continue</string>
+
+    <string name="show">Show</string>
+    <string name="hide">Hide</string>
+    <string name="date_placeholder">Date •• ••</string>
+    <string name="cvv_placeholder">CVV •••</string>
+    <string name="mastercard">mastercard</string>
+    <string name="visa">VISA</string>
+    <string name="home">Home</string>
+    <string name="ai">AI</string>
+    <string name="profile">Profile</string>
+    <string name="notifications">Notifications</string>
+    <string name="quick_actions">Quick actions</string>
+    <string name="transfer">Transfer</string>
+    <string name="add_a_template">Add a template</string>
+    <string name="share">Share</string>
+    <string name="cards_and_accounts">Cards and accounts (%1$d)</string>
 </resources>

@@ -17,7 +17,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aryandi.paymentnfc.ui.theme.AppColors
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
+import com.aryandi.paymentnfc.R
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * Confirmation dialog for setting a card as default payment
@@ -102,7 +104,7 @@ fun SetDefaultPaymentDialog(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Text(
-                    text = "Set as Default Payment",
+                    text = stringResource(R.string.set_as_default_payment),
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
                     color = AppColors.TextPrimary,
@@ -112,7 +114,7 @@ fun SetDefaultPaymentDialog(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "This will replace your current default payment method.",
+                    text = stringResource(R.string.set_default_confirmation),
                     fontSize = 16.sp,
                     color = AppColors.TextSecondary,
                     textAlign = TextAlign.Center,
@@ -133,7 +135,7 @@ fun SetDefaultPaymentDialog(
                     )
                 ) {
                     Text(
-                        text = "Continue",
+                        text = stringResource(R.string.continue_text),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.White
@@ -150,7 +152,7 @@ fun SetDefaultPaymentDialog(
                         .height(56.dp)
                 ) {
                     Text(
-                        text = "Cancel",
+                        text = stringResource(R.string.cancel),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color(0xFFE57373) // Red text

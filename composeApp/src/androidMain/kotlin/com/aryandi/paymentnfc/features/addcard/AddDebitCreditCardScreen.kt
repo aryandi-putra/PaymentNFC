@@ -24,9 +24,12 @@ import com.aryandi.paymentnfc.domain.model.CardTypeModel
 import com.aryandi.paymentnfc.presentation.viewmodel.AddCardEvent
 import com.aryandi.paymentnfc.presentation.viewmodel.AddCardIntent
 import com.aryandi.paymentnfc.presentation.viewmodel.AddCardViewModel
+import com.aryandi.paymentnfc.ui.components.AddCardForm
 import com.aryandi.paymentnfc.ui.theme.AppColors
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.androidx.compose.koinViewModel
+import com.aryandi.paymentnfc.R
+import androidx.compose.ui.res.stringResource
 
 /**
  * Add Debit/Credit Card Form Screen
@@ -40,13 +43,6 @@ fun AddDebitCreditCardScreen(
     viewModel: AddCardViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var categoryExpanded by remember { mutableStateOf(false) }
-    var cardTypeExpanded by remember { mutableStateOf(false) }
-    
-    val cardTypes = listOf(
-        CardTypeModel.VISA to "Visa",
-        CardTypeModel.MASTERCARD to "Mastercard"
-    )
     
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
@@ -65,7 +61,7 @@ fun AddDebitCreditCardScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.back),
                             tint = Color.Black
                         )
                     }
@@ -102,7 +98,7 @@ fun AddDebitCreditCardScreen(
                         )
                     } else {
                         Text(
-                            text = "Save",
+                            text = stringResource(R.string.save),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -121,7 +117,7 @@ fun AddDebitCreditCardScreen(
             Spacer(modifier = Modifier.height(16.dp))
             
             Text(
-                text = "Debit or Credit Card",
+                text = stringResource(R.string.debit_credit_card_title),
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -129,211 +125,11 @@ fun AddDebitCreditCardScreen(
             
             Spacer(modifier = Modifier.height(32.dp))
             
-            // Category Dropdown (from database)
-            Text(
-                text = "Choose category",
-                fontSize = 12.sp,
-                color = AppColors.TextGray,
-                modifier = Modifier.padding(bottom = 8.dp)
+            AddCardForm(
+                uiState = uiState,
+                onIntent = viewModel::onIntent,
+                showCardTypeSelection = true
             )
-            
-            ExposedDropdownMenuBox(
-                expanded = categoryExpanded,
-                onExpandedChange = { categoryExpanded = !categoryExpanded }
-            ) {
-                OutlinedTextField(
-                    value = uiState.selectedCategory?.displayName ?: "",
-                    onValueChange = {},
-                    readOnly = true,
-                    placeholder = {
-                        Text(
-                            text = if (uiState.isCategoriesLoading) "Loading..." else "Choose category",
-                            color = AppColors.TextGray
-                        )
-                    },
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Dropdown",
-                            tint = AppColors.TextGray
-                        )
-                    },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = AppColors.TextGray.copy(alpha = 0.3f),
-                        focusedBorderColor = AppColors.PrimaryBlue
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    enabled = !uiState.isCategoriesLoading
-                )
-                
-                ExposedDropdownMenu(
-                    expanded = categoryExpanded,
-                    onDismissRequest = { categoryExpanded = false }
-                ) {
-                    uiState.categories.forEach { category ->
-                        DropdownMenuItem(
-                            text = { Text(category.displayName) },
-                            onClick = {
-                                viewModel.onIntent(AddCardIntent.CategorySelected(category))
-                                categoryExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            // Card Type Dropdown
-            Text(
-                text = "Card type",
-                fontSize = 12.sp,
-                color = AppColors.TextGray,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            
-            ExposedDropdownMenuBox(
-                expanded = cardTypeExpanded,
-                onExpandedChange = { cardTypeExpanded = !cardTypeExpanded }
-            ) {
-                OutlinedTextField(
-                    value = when (uiState.cardType) {
-                        CardTypeModel.VISA -> "Visa"
-                        CardTypeModel.MASTERCARD -> "Mastercard"
-                    },
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Dropdown",
-                            tint = AppColors.TextGray
-                        )
-                    },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = AppColors.TextGray.copy(alpha = 0.3f),
-                        focusedBorderColor = AppColors.PrimaryBlue
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                )
-                
-                ExposedDropdownMenu(
-                    expanded = cardTypeExpanded,
-                    onDismissRequest = { cardTypeExpanded = false }
-                ) {
-                    cardTypes.forEach { (type, name) ->
-                        DropdownMenuItem(
-                            text = { Text(name) },
-                            onClick = {
-                                viewModel.onIntent(AddCardIntent.CardTypeChanged(type))
-                                cardTypeExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            // Card Number Field
-            OutlinedTextField(
-                value = uiState.cardNumber,
-                onValueChange = { viewModel.onIntent(AddCardIntent.CardNumberChanged(it)) },
-                placeholder = {
-                    Text(
-                        text = "Card Number",
-                        color = AppColors.TextGray
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.CreditCard,
-                        contentDescription = "Card",
-                        tint = AppColors.TextGray
-                    )
-                },
-                trailingIcon = {
-                    IconButton(onClick = { /* TODO: Open camera */ }) {
-                        Icon(
-                            imageVector = Icons.Default.CameraAlt,
-                            contentDescription = "Scan card",
-                            tint = AppColors.TextGray
-                        )
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = AppColors.TextGray.copy(alpha = 0.3f),
-                    focusedBorderColor = AppColors.PrimaryBlue
-                ),
-                shape = RoundedCornerShape(12.dp)
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            // Expiry Date and CVV Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // MM/YY Field
-                OutlinedTextField(
-                    value = uiState.expiryDate,
-                    onValueChange = { 
-                        if (it.length <= 5) viewModel.onIntent(AddCardIntent.ExpiryDateChanged(it))
-                    },
-                    placeholder = {
-                        Text(
-                            text = "MM/YY",
-                            color = AppColors.TextGray
-                        )
-                    },
-                    modifier = Modifier.weight(1f),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = AppColors.TextGray.copy(alpha = 0.3f),
-                        focusedBorderColor = AppColors.PrimaryBlue
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                )
-                
-                // CVV Field
-                OutlinedTextField(
-                    value = uiState.cvv,
-                    onValueChange = { 
-                        if (it.length <= 3) viewModel.onIntent(AddCardIntent.CvvChanged(it))
-                    },
-                    placeholder = {
-                        Text(
-                            text = "CVV 3 Digits",
-                            color = AppColors.TextGray
-                        )
-                    },
-                    modifier = Modifier.weight(1f),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = AppColors.TextGray.copy(alpha = 0.3f),
-                        focusedBorderColor = AppColors.PrimaryBlue
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                )
-            }
-            
-            if (uiState.error != null) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = uiState.error!!,
-                    color = Color.Red,
-                    fontSize = 14.sp
-                )
-            }
             
             Spacer(modifier = Modifier.height(24.dp))
         }

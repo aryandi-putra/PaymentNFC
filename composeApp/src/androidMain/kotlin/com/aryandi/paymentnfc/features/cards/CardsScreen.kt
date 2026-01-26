@@ -32,6 +32,8 @@ import com.aryandi.paymentnfc.ui.components.SectionHeader
 import com.aryandi.paymentnfc.ui.components.StackedCardList
 import com.aryandi.paymentnfc.ui.mapper.CardMapper
 import com.aryandi.paymentnfc.ui.theme.AppColors
+import com.aryandi.paymentnfc.R
+import androidx.compose.ui.res.stringResource
 import org.koin.androidx.compose.koinViewModel
 
 /**
@@ -76,7 +78,7 @@ fun CardsScreen(
                     if (uiState.isEditing) {
                         TextButton(onClick = { viewModel.onIntent(CardsIntent.ToggleEditMode) }) {
                             Text(
-                                text = "Cancel",
+                                text = stringResource(R.string.cancel),
                                 color = AppColors.TextPrimary,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Medium
@@ -86,7 +88,7 @@ fun CardsScreen(
                         IconButton(onClick = onBack) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Back",
+                                contentDescription = stringResource(R.string.back),
                                 tint = Color.Black
                             )
                         }
@@ -96,7 +98,7 @@ fun CardsScreen(
                     if (uiState.isEditing) {
                         TextButton(onClick = { viewModel.onIntent(CardsIntent.ToggleEditMode) }) {
                             Text(
-                                text = "Done",
+                                text = stringResource(R.string.done),
                                 color = AppColors.TextPrimary,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
@@ -105,7 +107,7 @@ fun CardsScreen(
                     } else {
                         TextButton(onClick = { viewModel.onIntent(CardsIntent.ToggleEditMode) }) {
                             Text(
-                                text = "Edit",
+                                text = stringResource(R.string.edit),
                                 color = AppColors.PrimaryBlue,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Medium
@@ -136,7 +138,7 @@ fun CardsScreen(
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Cards",
+                    text = stringResource(R.string.cards),
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black
@@ -152,7 +154,7 @@ fun CardsScreen(
                 ) {
                     ActionCard(
                         icon = Icons.Default.CreditCard,
-                        label = "Add Card",
+                        label = stringResource(R.string.add_card),
                         modifier = Modifier.weight(1f),
                         onClick = { 
                             // Default to first category if available
@@ -163,7 +165,7 @@ fun CardsScreen(
                     )
                     ActionCard(
                         icon = Icons.Default.Category,
-                        label = "Add Categories",
+                        label = stringResource(R.string.add_categories),
                         modifier = Modifier.weight(1f),
                         onClick = { viewModel.onIntent(CardsIntent.ShowAddCategorySheet) }
                     )
@@ -251,12 +253,12 @@ private fun CategorySection(
     // Section Header
     SectionHeader(
         title = categoryWithCards.category.displayName,
-        actionText = "Add Card",
+        actionText = stringResource(R.string.add_card),
         isEditing = isEditing,
         onActionClick = onAddCardClick,
         onDeleteClick = onDeleteCategoryClick
     )
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(4.dp))
     
     // Show empty state or cards
     if (cardDataList.isEmpty()) {

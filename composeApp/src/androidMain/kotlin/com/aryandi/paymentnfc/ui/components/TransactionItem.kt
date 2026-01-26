@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aryandi.paymentnfc.domain.model.Transaction
 import com.aryandi.paymentnfc.ui.theme.AppColors
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TransactionItem(transaction: Transaction) {
@@ -77,5 +78,28 @@ fun StatusBadge(status: String) {
             .padding(horizontal = 8.dp, vertical = 2.dp)
     ) {
         Text(text = status, color = textColor, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TransactionItemPreview() {
+    Column(modifier = Modifier.padding(16.dp)) {
+        TransactionItem(
+            transaction = Transaction(
+                title = "Currency exchange",
+                date = "Today, 11:00pm",
+                amount = "-$11.23",
+                status = "pending"
+            )
+        )
+        TransactionItem(
+            transaction = Transaction(
+                title = "Walmart",
+                date = "Nov 28, 2025",
+                amount = "-$76.12",
+                status = "confirmed"
+            )
+        )
     }
 }

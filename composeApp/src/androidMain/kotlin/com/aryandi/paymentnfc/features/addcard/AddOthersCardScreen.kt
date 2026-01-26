@@ -23,8 +23,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aryandi.paymentnfc.presentation.viewmodel.AddCardEvent
 import com.aryandi.paymentnfc.presentation.viewmodel.AddCardIntent
 import com.aryandi.paymentnfc.presentation.viewmodel.AddCardViewModel
+import com.aryandi.paymentnfc.ui.components.AddCardForm
 import com.aryandi.paymentnfc.ui.theme.AppColors
 import org.koin.androidx.compose.koinViewModel
+import com.aryandi.paymentnfc.R
+import androidx.compose.ui.res.stringResource
 
 /**
  * Add Others Card Form Screen
@@ -38,7 +41,6 @@ fun AddOthersCardScreen(
     viewModel: AddCardViewModel = koinViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var categoryExpanded by remember { mutableStateOf(false) }
     
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
@@ -57,7 +59,7 @@ fun AddOthersCardScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.back),
                             tint = Color.Black
                         )
                     }
@@ -93,7 +95,7 @@ fun AddOthersCardScreen(
                         )
                     } else {
                         Text(
-                            text = "Save",
+                            text = stringResource(R.string.save),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -112,7 +114,7 @@ fun AddOthersCardScreen(
             Spacer(modifier = Modifier.height(16.dp))
             
             Text(
-                text = "Others Card",
+                text = stringResource(R.string.others_card),
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
@@ -120,144 +122,11 @@ fun AddOthersCardScreen(
             
             Spacer(modifier = Modifier.height(32.dp))
             
-            // Category Dropdown (from database)
-            Text(
-                text = "Choose category",
-                fontSize = 12.sp,
-                color = AppColors.TextGray,
-                modifier = Modifier.padding(bottom = 8.dp)
+            AddCardForm(
+                uiState = uiState,
+                onIntent = viewModel::onIntent,
+                showCardTypeSelection = false
             )
-            
-            ExposedDropdownMenuBox(
-                expanded = categoryExpanded,
-                onExpandedChange = { categoryExpanded = !categoryExpanded }
-            ) {
-                OutlinedTextField(
-                    value = uiState.selectedCategory?.displayName ?: "",
-                    onValueChange = {},
-                    readOnly = true,
-                    placeholder = {
-                        Text(
-                            text = if (uiState.isCategoriesLoading) "Loading..." else "Choose category",
-                            color = AppColors.TextGray
-                        )
-                    },
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Dropdown",
-                            tint = AppColors.TextGray
-                        )
-                    },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxWidth(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = AppColors.TextGray.copy(alpha = 0.3f),
-                        focusedBorderColor = AppColors.PrimaryBlue
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    enabled = !uiState.isCategoriesLoading
-                )
-                
-                ExposedDropdownMenu(
-                    expanded = categoryExpanded,
-                    onDismissRequest = { categoryExpanded = false }
-                ) {
-                    uiState.categories.forEach { category ->
-                        DropdownMenuItem(
-                            text = { Text(category.displayName) },
-                            onClick = {
-                                viewModel.onIntent(AddCardIntent.CategorySelected(category))
-                                categoryExpanded = false
-                            }
-                        )
-                    }
-                }
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            // Card Number Field
-            Text(
-                text = "Card Number",
-                fontSize = 12.sp,
-                color = AppColors.TextGray,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            
-            OutlinedTextField(
-                value = uiState.cardNumber,
-                onValueChange = { viewModel.onIntent(AddCardIntent.CardNumberChanged(it)) },
-                placeholder = {
-                    Text(
-                        text = "8129 1111 2121 2111",
-                        color = AppColors.TextGray.copy(alpha = 0.5f)
-                    )
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Outlined.CreditCard,
-                        contentDescription = "Card",
-                        tint = AppColors.TextGray
-                    )
-                },
-                trailingIcon = {
-                    IconButton(onClick = { /* TODO: Open camera */ }) {
-                        Icon(
-                            imageVector = Icons.Default.CameraAlt,
-                            contentDescription = "Scan card",
-                            tint = AppColors.TextGray
-                        )
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = AppColors.TextGray.copy(alpha = 0.3f),
-                    focusedBorderColor = AppColors.PrimaryBlue
-                ),
-                shape = RoundedCornerShape(12.dp)
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            // Expired Date Field
-            Text(
-                text = "Expired Date",
-                fontSize = 12.sp,
-                color = AppColors.TextGray,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            
-            OutlinedTextField(
-                value = uiState.expiryDate,
-                onValueChange = { 
-                    if (it.length <= 5) viewModel.onIntent(AddCardIntent.ExpiryDateChanged(it))
-                },
-                placeholder = {
-                    Text(
-                        text = "MM/YY",
-                        color = AppColors.TextGray.copy(alpha = 0.5f)
-                    )
-                },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = AppColors.TextGray.copy(alpha = 0.3f),
-                    focusedBorderColor = AppColors.PrimaryBlue
-                ),
-                shape = RoundedCornerShape(12.dp)
-            )
-            
-            if (uiState.error != null) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = uiState.error!!,
-                    color = Color.Red,
-                    fontSize = 14.sp
-                )
-            }
         }
     }
 }

@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aryandi.paymentnfc.ui.theme.AppColors
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
+import com.aryandi.paymentnfc.R
 
 /**
  * Empty State Component for Card List
@@ -109,7 +111,7 @@ fun EmptyCardState(
             Spacer(modifier = Modifier.height(24.dp))
             
             Text(
-                text = "Add your first card",
+                text = stringResource(R.string.add_your_first_card),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = AppColors.TextPrimary,
@@ -119,7 +121,7 @@ fun EmptyCardState(
             Spacer(modifier = Modifier.height(8.dp))
             
             Text(
-                text = "Store member, credit, or debit card.",
+                text = stringResource(R.string.store_member_credit_debit),
                 fontSize = 14.sp,
                 color = AppColors.TextSecondary,
                 textAlign = TextAlign.Center
@@ -136,7 +138,7 @@ fun EmptyCardState(
                 modifier = Modifier.height(48.dp).padding(horizontal = 16.dp)
             ) {
                 Text(
-                    text = "Add your first card",
+                    text = stringResource(R.string.add_your_first_card),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White

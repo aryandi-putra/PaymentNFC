@@ -14,9 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.aryandi.paymentnfc.R
 import com.aryandi.paymentnfc.ui.theme.AppColors
 
 @Composable
@@ -31,7 +33,7 @@ fun HowToAddCardMenu(
             .padding(vertical = 24.dp)
     ) {
         Text(
-            text = "How to add card",
+            text = stringResource(R.string.how_to_add_card),
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = AppColors.TextPrimary
@@ -48,7 +50,7 @@ fun HowToAddCardMenu(
             Column(modifier = Modifier.padding(16.dp)) {
                 HowToItem(
                     icon = Icons.Default.CreditCard,
-                    title = "Debit or Credit Card",
+                    title = stringResource(R.string.debit_credit_card),
                     onClick = onDebitCreditClick
                 )
                 
@@ -59,7 +61,7 @@ fun HowToAddCardMenu(
                 
                 HowToItem(
                     icon = Icons.Default.Add,
-                    title = "Others Card",
+                    title = stringResource(R.string.others_card),
                     onClick = onOthersClick
                 )
             }
@@ -74,7 +76,7 @@ fun HowToAddCardMenu(
                 shape = RoundedCornerShape(24.dp),
                 modifier = Modifier.height(48.dp).padding(horizontal = 24.dp)
             ) {
-                Text("Ok, got it!", color = Color.White, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.ok_got_it), color = Color.White, fontWeight = FontWeight.SemiBold)
             }
         }
     }

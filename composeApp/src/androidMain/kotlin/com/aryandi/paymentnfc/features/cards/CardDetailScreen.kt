@@ -43,7 +43,7 @@ import com.aryandi.paymentnfc.presentation.viewmodel.CardDetailEvent
 import com.aryandi.paymentnfc.presentation.viewmodel.CardDetailIntent
 import com.aryandi.paymentnfc.ui.components.CardData
 import com.aryandi.paymentnfc.ui.components.CardType
-import com.aryandi.paymentnfc.ui.components.DetailedCreditCard
+import com.aryandi.paymentnfc.ui.components.CreditCard
 import com.aryandi.paymentnfc.ui.components.DeleteCardDialog
 import com.aryandi.paymentnfc.ui.components.FilledRoundedTextField
 import com.aryandi.paymentnfc.ui.components.FilterButton
@@ -57,6 +57,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 import com.aryandi.paymentnfc.presentation.viewmodel.CardDetailViewModel
+import com.aryandi.paymentnfc.R
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -135,7 +137,7 @@ fun CardDetailScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.back),
                             tint = AppColors.TextPrimary
                         )
                     }
@@ -144,7 +146,7 @@ fun CardDetailScreen(
                     IconButton(onClick = { showMoreActionsSheet = true }) {
                         Icon(
                             imageVector = Icons.Default.MoreHoriz,
-                            contentDescription = "More Actions",
+                            contentDescription = stringResource(R.string.more_actions),
                             tint = AppColors.TextPrimary
                         )
                     }
@@ -164,7 +166,7 @@ fun CardDetailScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 
                 Text(
-                    text = "Transactions",
+                    text = stringResource(R.string.transactions),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = AppColors.TextPrimary
@@ -180,9 +182,9 @@ fun CardDetailScreen(
                         FilledRoundedTextField(
                             value = "",
                             onValueChange = {},
-                            placeholder = "Search",
+                            placeholder = stringResource(R.string.search),
                             trailingIcon = {
-                                Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.Gray)
+                                Icon(Icons.Default.Search, contentDescription = stringResource(R.string.search), tint = Color.Gray)
                             }
                         )
                     }
@@ -238,7 +240,7 @@ fun CardDetailScreen(
                     .padding(horizontal = 24.dp)
             ) {
                 Text(
-                    text = "Card Details",
+                    text = stringResource(R.string.card_details),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = AppColors.TextPrimary
@@ -246,7 +248,7 @@ fun CardDetailScreen(
                 
                 Spacer(modifier = Modifier.height(24.dp))
                 
-                DetailedCreditCard(cardData = cardData)
+                CreditCard(cardData = cardData, isFullDetail = true)
                 
                 Spacer(modifier = Modifier.height(24.dp))
                 
@@ -256,7 +258,7 @@ fun CardDetailScreen(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        text = "Show Card Details",
+                        text = stringResource(R.string.show_card_details),
                         color = Color(0xFF3A8375),
                         fontWeight = FontWeight.SemiBold
                     )
@@ -291,8 +293,8 @@ fun CardDetailScreen(
     // Success Dialog (Default Payment Updated)
     if (showDefaultPaymentSuccessDialog) {
         SuccessDialog(
-            title = "Default Payment Updated",
-            description = "Your payment default has been updated successfully.",
+            title = stringResource(R.string.default_payment_updated),
+            description = stringResource(R.string.default_payment_desc),
             onDismiss = { showDefaultPaymentSuccessDialog = false }
         )
     }
@@ -310,8 +312,8 @@ fun CardDetailScreen(
     // Success Dialog (Card Deleted)
     if (showDeleteSuccessDialog) {
         SuccessDialog(
-            title = "The Card Has Been Deleted",
-            description = "The card has been successfully deleted and is no longer active.",
+            title = stringResource(R.string.card_deleted_title),
+            description = stringResource(R.string.card_deleted_desc),
             onDismiss = { 
                 showDeleteSuccessDialog = false
                 onBack()

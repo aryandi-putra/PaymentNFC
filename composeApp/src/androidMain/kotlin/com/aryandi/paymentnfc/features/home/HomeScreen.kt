@@ -46,16 +46,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aryandi.paymentnfc.presentation.viewmodel.HomeViewModel
+import com.aryandi.paymentnfc.R
 import com.aryandi.paymentnfc.ui.components.AppBottomNavBar
 import com.aryandi.paymentnfc.ui.components.BottomNavTab
-import com.aryandi.paymentnfc.ui.components.SectionHeaderWithViewAll
+import com.aryandi.paymentnfc.ui.components.SectionHeader
 import com.aryandi.paymentnfc.ui.components.SimpleCreditCard
 import com.aryandi.paymentnfc.ui.components.TransactionItem
 import com.aryandi.paymentnfc.ui.theme.AppColors
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /**
  * Home Screen - Implementation based on design
@@ -135,8 +137,9 @@ fun HomeScreen(
                             .background(AppColors.BackgroundWhite)
                             .padding(top = 24.dp, start = 20.dp, end = 20.dp, bottom = 8.dp)
                     ) {
-                        SectionHeaderWithViewAll(
-                            title = "Recent transactions",
+                        SectionHeader(
+                            title = stringResource(R.string.recent_transactions),
+                            showViewAll = true,
                             onViewAllClick = { }
                         )
                     }
@@ -217,7 +220,7 @@ fun HomeHeader(name: String, userId: String) {
             IconButton(onClick = { }) {
                 Icon(
                     imageVector = Icons.Outlined.Notifications,
-                    contentDescription = "Notifications",
+                    contentDescription = stringResource(R.string.notifications),
                     tint = Color.White,
                     modifier = Modifier.size(28.dp)
                 )
@@ -238,7 +241,7 @@ fun HomeHeader(name: String, userId: String) {
 fun QuickActionsSection() {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Text(
-            text = "Quick actions",
+            text = stringResource(R.string.quick_actions),
             color = Color.White.copy(alpha = 0.8f),
             fontSize = 14.sp
         )
@@ -247,9 +250,9 @@ fun QuickActionsSection() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            QuickActionButton(icon = Icons.Default.SwapHoriz, label = "Transfer")
-            QuickActionButton(icon = Icons.Default.Star, label = "Add a template")
-            QuickActionButton(icon = Icons.Default.IosShare, label = "Share")
+            QuickActionButton(icon = Icons.Default.SwapHoriz, label = stringResource(R.string.transfer))
+            QuickActionButton(icon = Icons.Default.Star, label = stringResource(R.string.add_a_template))
+            QuickActionButton(icon = Icons.Default.IosShare, label = stringResource(R.string.share))
         }
     }
 }
@@ -275,7 +278,7 @@ fun QuickActionButton(icon: ImageVector, label: String) {
 fun CardsSection(count: Int) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Text(
-            text = "Cards and accounts ($count)",
+            text = stringResource(R.string.cards_and_accounts, count),
             color = Color.White.copy(alpha = 0.8f),
             fontSize = 14.sp
         )

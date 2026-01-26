@@ -12,18 +12,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.aryandi.paymentnfc.R
 import com.aryandi.paymentnfc.ui.theme.AppColors
-import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SuccessDialog(
-    title: String = "Default Payment Updated",
-    description: String = "Your payment default has been updated successfully.",
+    title: String = stringResource(R.string.default_payment_updated),
+    description: String = stringResource(R.string.default_payment_desc),
     onDismiss: () -> Unit = {}
 ) {
     ModalBottomSheet(

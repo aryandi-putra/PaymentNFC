@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -34,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aryandi.paymentnfc.presentation.viewmodel.LoginEvent
 import com.aryandi.paymentnfc.presentation.viewmodel.LoginIntent
 import com.aryandi.paymentnfc.presentation.viewmodel.LoginViewModel
+import com.aryandi.paymentnfc.R
 import com.aryandi.paymentnfc.ui.components.AuthScreenScaffold
 import com.aryandi.paymentnfc.ui.components.FilledRoundedTextField
 import com.aryandi.paymentnfc.ui.components.GradientButton
@@ -64,7 +66,7 @@ fun SignInScreen(
     }
 
     AuthScreenScaffold(
-        title = "Sign in",
+        title = stringResource(R.string.sign_in),
         onBack = onBack,
         snackbarHostState = snackbarHostState
     ) {
@@ -72,7 +74,7 @@ fun SignInScreen(
 
         // Welcome text
         Text(
-            text = "Welcome Back",
+            text = stringResource(R.string.welcome_back),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = AppColors.TextPrimary,
@@ -80,7 +82,7 @@ fun SignInScreen(
             textAlign = TextAlign.Center
         )
         Text(
-            text = "Hello there, sign in to continue",
+            text = stringResource(R.string.hello_sign_in_continue),
             fontSize = 14.sp,
             color = AppColors.TextSecondary,
             modifier = Modifier.padding(top = 4.dp).fillMaxWidth(),
@@ -121,7 +123,7 @@ fun SignInScreen(
                 viewModel.onIntent(LoginIntent.UsernameChanged(it))
                 if (uiState.error != null) viewModel.onIntent(LoginIntent.ClearError)
             },
-            placeholder = "Username",
+            placeholder = stringResource(R.string.username),
             enabled = !uiState.isLoading
         )
 
@@ -134,7 +136,7 @@ fun SignInScreen(
                 viewModel.onIntent(LoginIntent.PasswordChanged(it))
                 if (uiState.error != null) viewModel.onIntent(LoginIntent.ClearError)
             },
-            placeholder = "Password",
+            placeholder = stringResource(R.string.password),
             enabled = !uiState.isLoading,
             visualTransformation = PasswordVisualTransformation()
         )
@@ -154,7 +156,7 @@ fun SignInScreen(
         }
 
         Text(
-            text = "Forgot your password ?",
+            text = stringResource(R.string.forgot_password),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 4.dp)
@@ -168,7 +170,7 @@ fun SignInScreen(
 
         // Sign in button
         GradientButton(
-            text = "Sign in",
+            text = stringResource(R.string.sign_in),
             onClick = { viewModel.onIntent(LoginIntent.Submit) },
             isLoading = uiState.isLoading
         )
@@ -181,13 +183,13 @@ fun SignInScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Don't have an account?",
+                text = stringResource(R.string.dont_have_account),
                 color = AppColors.TextSecondary,
                 fontSize = 14.sp,
             )
             TextButton(onClick = onSignUp) {
                 Text(
-                    text = "Sign Up",
+                    text = stringResource(R.string.sign_up),
                     color = AppColors.TextPrimary,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,

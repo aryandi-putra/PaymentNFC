@@ -26,6 +26,8 @@ import com.aryandi.paymentnfc.presentation.viewmodel.OtpEvent
 import com.aryandi.paymentnfc.presentation.viewmodel.OtpIntent
 import com.aryandi.paymentnfc.presentation.viewmodel.OtpViewModel
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.ui.res.stringResource
+import com.aryandi.paymentnfc.R
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.androidx.compose.koinViewModel
 
@@ -78,7 +80,7 @@ fun OtpScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "Verification",
+                        stringResource(R.string.otp_verification),
                         color = Color.White,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 20.sp
@@ -121,7 +123,7 @@ fun OtpScreen(
                     Spacer(modifier = Modifier.height(32.dp))
 
                     Text(
-                        text = "Verify your account",
+                        text = stringResource(R.string.verification),
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
                         color = titleColor,
@@ -182,7 +184,7 @@ fun OtpScreen(
                                 CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
                             } else {
                                 Text(
-                                    text = "Verify",
+                                    text = stringResource(R.string.verify_account),
                                     color = Color.White,
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.SemiBold

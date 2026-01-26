@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.aryandi.paymentnfc.ui.theme.AppColors
+import androidx.compose.ui.res.stringResource
+import com.aryandi.paymentnfc.R
 
 /**
  * Navigation item data class
@@ -42,27 +44,27 @@ fun AppBottomNavBar(
 ) {
     val navItems = listOf(
         NavItem(
-            label = "Home",
+            label = stringResource(R.string.home),
             icon = Icons.Default.Home,
-            contentDescription = "Home",
+            contentDescription = stringResource(R.string.home),
             onClick = onHomeClick
         ),
         NavItem(
-            label = "Cards",
+            label = stringResource(R.string.cards),
             icon = Icons.Default.CreditCard,
-            contentDescription = "Cards",
+            contentDescription = stringResource(R.string.cards),
             onClick = onCardsClick
         ),
         NavItem(
-            label = "AI",
+            label = stringResource(R.string.ai),
             icon = Icons.Default.SmartToy,
-            contentDescription = "AI",
+            contentDescription = stringResource(R.string.ai),
             onClick = onAiClick
         ),
         NavItem(
-            label = "Profile",
+            label = stringResource(R.string.profile),
             icon = Icons.Default.Person,
-            contentDescription = "Profile",
+            contentDescription = stringResource(R.string.profile),
             onClick = onProfileClick
         )
     )

@@ -12,10 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.aryandi.paymentnfc.R
 import com.aryandi.paymentnfc.ui.theme.AppColors
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -103,7 +105,7 @@ fun DeleteCardDialog(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Deleted Card",
+                text = stringResource(R.string.deleted_card),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 color = AppColors.TextPrimary,
@@ -113,7 +115,7 @@ fun DeleteCardDialog(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Are you sure you want to\ndelete this card?",
+                text = stringResource(R.string.delete_confirmation),
                 fontSize = 16.sp,
                 color = AppColors.TextSecondary,
                 textAlign = TextAlign.Center,
@@ -134,7 +136,7 @@ fun DeleteCardDialog(
                 )
             ) {
                 Text(
-                    text = "Continue",
+                    text = stringResource(R.string.continue_text),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White
@@ -154,7 +156,7 @@ fun DeleteCardDialog(
                 )
             ) {
                 Text(
-                    text = "Go Back",
+                    text = stringResource(R.string.go_back),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF3A8375) // Teal text

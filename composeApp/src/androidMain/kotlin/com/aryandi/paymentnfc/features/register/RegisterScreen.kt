@@ -18,6 +18,8 @@ import com.aryandi.paymentnfc.ui.components.GradientButton
 import com.aryandi.paymentnfc.ui.components.OutlinedRoundedTextField
 import com.aryandi.paymentnfc.ui.theme.AppColors
 import org.koin.androidx.compose.koinViewModel
+import com.aryandi.paymentnfc.R
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun SignUpScreen(
@@ -43,14 +45,14 @@ fun SignUpScreen(
     }
 
     AuthScreenScaffold(
-        title = "Sign up",
+        title = stringResource(R.string.sign_up),
         onBack = onBack,
         snackbarHostState = snackbarHostState
     ) {
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "Create Account",
+            text = stringResource(R.string.create_account),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = AppColors.TextPrimary,
@@ -62,7 +64,7 @@ fun SignUpScreen(
         OutlinedRoundedTextField(
             value = uiState.username,
             onValueChange = { viewModel.onIntent(RegisterIntent.UsernameChanged(it)) },
-            placeholder = "Username"
+            placeholder = stringResource(R.string.username)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -70,7 +72,7 @@ fun SignUpScreen(
         OutlinedRoundedTextField(
             value = uiState.email,
             onValueChange = { viewModel.onIntent(RegisterIntent.EmailChanged(it)) },
-            placeholder = "Email"
+            placeholder = stringResource(R.string.email)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -78,7 +80,7 @@ fun SignUpScreen(
         OutlinedRoundedTextField(
             value = uiState.firstName,
             onValueChange = { viewModel.onIntent(RegisterIntent.FirstNameChanged(it)) },
-            placeholder = "First Name"
+            placeholder = stringResource(R.string.first_name)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -86,13 +88,13 @@ fun SignUpScreen(
         OutlinedRoundedTextField(
             value = uiState.lastName,
             onValueChange = { viewModel.onIntent(RegisterIntent.LastNameChanged(it)) },
-            placeholder = "Last Name"
+            placeholder = stringResource(R.string.last_name)
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         GradientButton(
-            text = "Sign Up",
+            text = stringResource(R.string.sign_up),
             onClick = { viewModel.onIntent(RegisterIntent.Submit) },
             isLoading = uiState.isLoading
         )
@@ -104,10 +106,10 @@ fun SignUpScreen(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Have an account? ", color = AppColors.TextSecondary, fontSize = 14.sp)
+            Text(text = stringResource(R.string.have_account), color = AppColors.TextSecondary, fontSize = 14.sp)
             TextButton(onClick = onSignIn) {
                 Text(
-                    text = "Sign In",
+                    text = stringResource(R.string.sign_in),
                     color = AppColors.TextPrimary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp
